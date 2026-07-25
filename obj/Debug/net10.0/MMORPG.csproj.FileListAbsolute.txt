@@ -1,0 +1,14 @@
+/mnt/Disco2/MMORPG/bin/Debug/net10.0/MMORPG
+/mnt/Disco2/MMORPG/bin/Debug/net10.0/MMORPG.deps.json
+/mnt/Disco2/MMORPG/bin/Debug/net10.0/MMORPG.runtimeconfig.json
+/mnt/Disco2/MMORPG/bin/Debug/net10.0/MMORPG.dll
+/mnt/Disco2/MMORPG/bin/Debug/net10.0/MMORPG.pdb
+/mnt/Disco2/MMORPG/obj/Debug/net10.0/MMORPG.GeneratedMSBuildEditorConfig.editorconfig
+/mnt/Disco2/MMORPG/obj/Debug/net10.0/MMORPG.AssemblyInfoInputs.cache
+/mnt/Disco2/MMORPG/obj/Debug/net10.0/MMORPG.AssemblyInfo.cs
+/mnt/Disco2/MMORPG/obj/Debug/net10.0/MMORPG.csproj.CoreCompileInputs.cache
+/mnt/Disco2/MMORPG/obj/Debug/net10.0/MMORPG.dll
+/mnt/Disco2/MMORPG/obj/Debug/net10.0/refint/MMORPG.dll
+/mnt/Disco2/MMORPG/obj/Debug/net10.0/MMORPG.pdb
+/mnt/Disco2/MMORPG/obj/Debug/net10.0/MMORPG.genruntimeconfig.cache
+/mnt/Disco2/MMORPG/obj/Debug/net10.0/ref/MMORPG.dll
