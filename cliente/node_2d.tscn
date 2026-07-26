@@ -1,0 +1,100 @@
+[gd_scene format=3 uid="uid://clyrhp0l0msj7"]
+
+[ext_resource type="Script" uid="uid://4cgollo2wm51" path="res://Styles/EstiloLoginPanel.cs" id="1_wtcfe"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_te065"]
+bg_color = Color(0.0022744744, 0, 0.06657717, 1)
+
+[node name="LoginPanel" type="Control" unique_id=2131476015]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_wtcfe")
+
+[node name="Fondo" type="ColorRect" parent="." unique_id=1217980010]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0022967462, 0.002296746, 0.0022967458, 1)
+
+[node name="PanelLogin" type="Panel" parent="." unique_id=649744888]
+propagate_maximum_size = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -262.5
+offset_top = -300.0
+offset_right = 262.5
+offset_bottom = 300.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_te065")
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelLogin" unique_id=922421695]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_bottom = 30
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelLogin/MarginContainer" unique_id=427488423]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="titulo" type="Label" parent="PanelLogin/MarginContainer/VBoxContainer" unique_id=1356884683]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Iniciar Sesión"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="PanelLogin/MarginContainer/VBoxContainer" unique_id=490337840]
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="User" type="Label" parent="PanelLogin/MarginContainer/VBoxContainer" unique_id=1896778860]
+layout_mode = 2
+theme_override_font_sizes/font_size = 19
+text = "Usuario"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="UserInput" type="LineEdit" parent="PanelLogin/MarginContainer/VBoxContainer" unique_id=367276148]
+layout_mode = 2
+
+[node name="Password" type="Label" parent="PanelLogin/MarginContainer/VBoxContainer" unique_id=309697438]
+layout_mode = 2
+theme_override_font_sizes/font_size = 19
+text = "Contraseña"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PasswordInput" type="LineEdit" parent="PanelLogin/MarginContainer/VBoxContainer" unique_id=414847135]
+layout_mode = 2
+
+[node name="HSeparator2" type="HSeparator" parent="PanelLogin/MarginContainer/VBoxContainer" unique_id=422171247]
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="BotonIniciar" type="Button" parent="PanelLogin/MarginContainer/VBoxContainer" unique_id=1687783772]
+layout_mode = 2
+offset_transform_enabled = true
+text = "Entrar"
+
+[connection signal="button_down" from="PanelLogin/MarginContainer/VBoxContainer/BotonIniciar" to="." method="_on_button_button_down"]

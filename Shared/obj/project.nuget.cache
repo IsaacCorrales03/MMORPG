@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "qZ90Gm1a084=",
+  "success": true,
+  "projectFilePath": "/mnt/Disco2/MMORPG/Shared/Shared.csproj",
+  "expectedPackageFiles": [
+    "/home/Cherry/.nuget/packages/microsoft.netcore.app.ref/8.0.28/microsoft.netcore.app.ref.8.0.28.nupkg.sha512",
+    "/home/Cherry/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.28/microsoft.aspnetcore.app.ref.8.0.28.nupkg.sha512"
+  ],
+  "logs": []
+}
