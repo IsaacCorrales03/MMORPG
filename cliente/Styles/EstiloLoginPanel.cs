@@ -21,6 +21,7 @@ public partial class EstiloLoginPanel : Control
 	private Label etiquetaClave; 
 	private LineEdit userInput;
 	private LineEdit passwordInput;
+	private LineEdit emailInput;
 	public override void _Ready()
 	{
 		boton = GetNode<Button>("PanelLogin/MarginContainer/VBoxContainer/BotonIniciar");
@@ -31,6 +32,7 @@ public partial class EstiloLoginPanel : Control
 		etiquetaClave = GetNode<Label>("PanelLogin/MarginContainer/VBoxContainer/Password");
 		userInput = GetNode<LineEdit>("PanelLogin/MarginContainer/VBoxContainer/UserInput");
 		passwordInput = GetNode<LineEdit>("PanelLogin/MarginContainer/VBoxContainer/PasswordInput");
+		emailInput = GetNode<LineEdit>("PanelLogin/MarginContainer/VBoxContainer/EmailInput");
 		boton.Pressed += alPresionarBoton;
 		AplicarFondoGeneral();
 		AplicarEstiloPanel();
@@ -44,10 +46,13 @@ public partial class EstiloLoginPanel : Control
 	{
 		string usuario = userInput.Text;
 		string clave = passwordInput.Text;
-		PaquetePeticionInicioSesion paquete = new PaquetePeticionInicioSesion();
+		string email = emailInput.Text;
+		PaquetePeticionRegistro paquete = new();
 		paquete.Usuario = usuario;
 		paquete.Clave = clave;
-		Conexion.Instance.EnviarPaquete(TipoPaquete.PeticionInicioSesion, paquete);
+		paquete.Email = email;
+
+		Conexion.Instance.EnviarPaquete(TipoPaquete.PeticionRegistro, paquete);
 		
 	}
 	private void AplicarFondoGeneral()

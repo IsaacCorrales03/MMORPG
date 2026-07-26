@@ -92,6 +92,20 @@ layout_mode = 2
 layout_mode = 2
 theme_override_constants/separation = 3
 
+[node name="Email" type="Label" parent="PanelLogin/MarginContainer/VBoxContainer" unique_id=1449358913]
+layout_mode = 2
+theme_override_font_sizes/font_size = 19
+text = "Email"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="EmailInput" type="LineEdit" parent="PanelLogin/MarginContainer/VBoxContainer" unique_id=1470823348]
+layout_mode = 2
+
+[node name="HSeparator3" type="HSeparator" parent="PanelLogin/MarginContainer/VBoxContainer" unique_id=1414638062]
+layout_mode = 2
+theme_override_constants/separation = 3
+
 [node name="BotonIniciar" type="Button" parent="PanelLogin/MarginContainer/VBoxContainer" unique_id=1687783772]
 layout_mode = 2
 offset_transform_enabled = true

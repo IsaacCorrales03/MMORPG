@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using System.Text.Json;
 using LiteNetLib;
+using Server.Red;
 using Shared.Paquetes;
 using Shared.Utils;
 
@@ -30,12 +31,12 @@ listener.PeerConnectedEvent += peer =>
     Console.WriteLine($"Nueva conexión {peer}");
 };
 
-listener.PeerDisconnectedEvent += (peer, disconnectionInfo) =>
+listener.PeerDisconnectedEvent += async(peer, disconnectionInfo) =>
 {
     Console.WriteLine($"Se desconectó: {peer}, razón: {disconnectionInfo.Reason}");
 };
 
-listener.NetworkReceiveEvent += (peer, reader, channel, deliveryMethod) => {
+listener.NetworkReceiveEvent += async(peer, reader, channel, deliveryMethod) => {
     Console.WriteLine($"{peer} - {peer.Ping} ms");
     byte[] datos = reader.GetRemainingBytes();
     string json = Encoding.UTF8.GetString(datos);
@@ -49,26 +50,7 @@ listener.NetworkReceiveEvent += (peer, reader, channel, deliveryMethod) => {
             reader.Recycle();
             return;
         }
-        switch (sobre.TipoDePaquete)
-        {
-            case TipoPaquete.PeticionInicioSesion:
-            {
-                var peticion = JsonSerializer.Deserialize<PaquetePeticionInicioSesion>(sobre.Contenido);
-                if (peticion is null)
-                {
-                    Console.WriteLine($"Contenido inválido en PeticionInicioSesion de {peer}");
-                    break;
-                }
-                Console.Write($"{peticion.Usuario} y {peticion.Clave}");
-                
-                break;
-            }
-            default:
-            {
-                Console.WriteLine($"Tipo de paquete no manejado: {sobre.TipoDePaquete}");
-                break;
-            }
-        }
+        await Router.Enrutar(sobre, peer);
         
     }
     catch (JsonException ex)

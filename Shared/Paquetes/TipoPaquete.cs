@@ -4,6 +4,8 @@ namespace Shared.Paquetes
     {
         PeticionInicioSesion,
         RespuestaInicioSesion,
-        AparecerJugador
+        AparecerJugador,
+        PeticionRegistro,
+        RespuestaRegistro
     }
 }
