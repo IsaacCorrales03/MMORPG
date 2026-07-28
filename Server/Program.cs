@@ -31,34 +31,32 @@ listener.PeerConnectedEvent += peer =>
     Console.WriteLine($"Nueva conexión {peer}");
 };
 
-listener.PeerDisconnectedEvent += async(peer, disconnectionInfo) =>
+listener.PeerDisconnectedEvent += async (peer, disconnectionInfo) =>
 {
     Console.WriteLine($"Se desconectó: {peer}, razón: {disconnectionInfo.Reason}");
 };
 
-listener.NetworkReceiveEvent += async(peer, reader, channel, deliveryMethod) => {
-    Console.WriteLine($"{peer} - {peer.Ping} ms");
-    byte[] datos = reader.GetRemainingBytes();
-    string json = Encoding.UTF8.GetString(datos);
+listener.NetworkReceiveEvent += async (peer, reader, channel, deliveryMethod) =>
+{
     try
     {
-        Sobre? sobre = JsonSerializer.Deserialize<Sobre>(json);
+        TipoPaquete tipo = (TipoPaquete)reader.GetByte();
+        byte[] contenido = reader.GetBytesWithLength();
 
-        if (sobre is null)
-        {
-            Console.WriteLine($"Paquete inválido recibido de {peer}, no se pudo deserializar.");
-            reader.Recycle();
-            return;
-        }
-        await Router.Enrutar(sobre, peer);
-        
+        await Router.Enrutar(tipo, contenido, peer);
     }
     catch (JsonException ex)
     {
         Console.WriteLine($"Error deserializando paquete de {peer}: {ex.Message}");
     }
-    
-    reader.Recycle();
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error inesperado procesando paquete de {peer}: {ex}");
+    }
+    finally
+    {
+        reader.Recycle();
+    }
 };
 
 while (!Console.KeyAvailable)

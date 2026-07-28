@@ -6,6 +6,8 @@ namespace Shared.Paquetes
         RespuestaInicioSesion,
         AparecerJugador,
         PeticionRegistro,
-        RespuestaRegistro
+        RespuestaRegistro,
+        PeticionReanudarSesion,
+        RespuestaReanudarSesion
     }
 }

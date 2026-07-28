@@ -1,5 +1,7 @@
 using System.Linq.Expressions;
 using System.Text.Json;
+using Client.Juego;
+using Client.Red;
 using Godot;
 using Shared.Paquetes;
 
@@ -22,6 +24,12 @@ public partial class EstiloLoginPanel : Control
 	private LineEdit userInput;
 	private LineEdit passwordInput;
 	private LineEdit emailInput;
+
+	// --- Overlay de resultado (éxito / fallo) ---
+	private Control overlayResultado;
+	private Label labelResultado;
+	private Button botonReintentar;
+
 	public override void _Ready()
 	{
 		boton = GetNode<Button>("PanelLogin/MarginContainer/VBoxContainer/BotonIniciar");
@@ -34,6 +42,8 @@ public partial class EstiloLoginPanel : Control
 		passwordInput = GetNode<LineEdit>("PanelLogin/MarginContainer/VBoxContainer/PasswordInput");
 		emailInput = GetNode<LineEdit>("PanelLogin/MarginContainer/VBoxContainer/EmailInput");
 		boton.Pressed += alPresionarBoton;
+		GameState.Instance.RegistroExitoso += OnRegistroExitoso;
+		GameState.Instance.RegistroFallido += OnRegistroFallido;
 		AplicarFondoGeneral();
 		AplicarEstiloPanel();
 		AplicarEstiloTitulo();
@@ -41,7 +51,19 @@ public partial class EstiloLoginPanel : Control
 		AplicarEstiloCampos();
 		AplicarEstiloBoton();
 		AgregarEsquinasOrnamentales();
+		CrearOverlayResultado();
 	}
+
+	private void OnRegistroExitoso()
+	{
+		MostrarResultado(true, "REGISTRADO EXITOSAMENTE");
+	}
+
+	private void OnRegistroFallido(string mensaje)
+	{
+		MostrarResultado(false, "REGISTRO FALLIDO");
+	}
+
 	private void alPresionarBoton()
 	{
 		string usuario = userInput.Text;
@@ -51,10 +73,9 @@ public partial class EstiloLoginPanel : Control
 		paquete.Usuario = usuario;
 		paquete.Clave = clave;
 		paquete.Email = email;
-
-		Conexion.Instance.EnviarPaquete(TipoPaquete.PeticionRegistro, paquete);
-		
+		Router.EnviarPaquete(TipoPaquete.PeticionRegistro, paquete);
 	}
+
 	private void AplicarFondoGeneral()
 	{
 		if (fondo != null)
@@ -158,6 +179,88 @@ public partial class EstiloLoginPanel : Control
 		ornamentos.SetAnchorsPreset(LayoutPreset.FullRect);
 		ornamentos.MouseFilter = Control.MouseFilterEnum.Ignore;
 		panel.AddChild(ornamentos);
+	}
+
+	// --- Overlay de resultado ---
+
+	private void CrearOverlayResultado()
+	{
+		overlayResultado = new Control();
+		overlayResultado.SetAnchorsPreset(LayoutPreset.FullRect);
+		overlayResultado.MouseFilter = Control.MouseFilterEnum.Stop;
+		overlayResultado.Visible = false;
+		AddChild(overlayResultado);
+
+		var fondoOverlay = new ColorRect();
+		fondoOverlay.Color = FondoGeneral;
+		fondoOverlay.SetAnchorsPreset(LayoutPreset.FullRect);
+		overlayResultado.AddChild(fondoOverlay);
+
+		var centro = new CenterContainer();
+		centro.SetAnchorsPreset(LayoutPreset.FullRect);
+		overlayResultado.AddChild(centro);
+
+		var caja = new VBoxContainer();
+		caja.AddThemeConstantOverride("separation", 28);
+		centro.AddChild(caja);
+
+		labelResultado = new Label();
+		labelResultado.HorizontalAlignment = HorizontalAlignment.Center;
+		labelResultado.AddThemeColorOverride("font_color", TextoPrincipal);
+		labelResultado.AddThemeFontSizeOverride("font_size", 26);
+		caja.AddChild(labelResultado);
+
+		botonReintentar = new Button();
+		botonReintentar.Text = "V O L V E R   A   I N T E N T A R";
+		botonReintentar.CustomMinimumSize = new Vector2(280, 60);
+		botonReintentar.SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter;
+		botonReintentar.Pressed += OnBotonReintentarPresionado;
+
+		var estiloNormal = new StyleBoxFlat();
+		estiloNormal.BgColor = new Color(0, 0, 0, 0);
+		estiloNormal.SetBorderWidthAll(1);
+		estiloNormal.BorderColor = AcentoAmbar;
+		estiloNormal.SetCornerRadiusAll(2);
+
+		var estiloHover = (StyleBoxFlat)estiloNormal.Duplicate();
+		estiloHover.BgColor = new Color(AcentoAmbar, 0.12f);
+
+		var estiloPressed = (StyleBoxFlat)estiloNormal.Duplicate();
+		estiloPressed.BgColor = new Color(AcentoAmbar, 0.25f);
+
+		botonReintentar.AddThemeStyleboxOverride("normal", estiloNormal);
+		botonReintentar.AddThemeStyleboxOverride("hover", estiloHover);
+		botonReintentar.AddThemeStyleboxOverride("pressed", estiloPressed);
+		botonReintentar.AddThemeColorOverride("font_color", AcentoAmbar);
+		botonReintentar.AddThemeColorOverride("font_hover_color", TextoPrincipal);
+		botonReintentar.AddThemeFontSizeOverride("font_size", 16);
+
+		caja.AddChild(botonReintentar);
+	}
+
+	private void MostrarResultado(bool exito, string mensaje)
+	{
+		labelResultado.Text = mensaje;
+		labelResultado.AddThemeColorOverride("font_color", exito ? TextoPrincipal : AcentoAmbar);
+
+		if (fondo != null)
+			fondo.Visible = false;
+		panel.Visible = false;
+
+		overlayResultado.Visible = true;
+	}
+
+	private void OnBotonReintentarPresionado()
+	{
+		overlayResultado.Visible = false;
+
+		if (fondo != null)
+			fondo.Visible = true;
+		panel.Visible = true;
+
+		userInput.Text = "";
+		passwordInput.Text = "";
+		emailInput.Text = "";
 	}
 }
 

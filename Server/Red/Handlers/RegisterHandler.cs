@@ -1,3 +1,6 @@
+using LiteNetLib;
+using Server.Core;
+using Server.Red.Sesiones;
 using Server.Servicios;
 using Shared.Paquetes;
 
@@ -7,7 +10,7 @@ namespace Server.Red.Handlers
     {
         private static readonly ServicioAutenticacion _servicio = new ServicioAutenticacion();
 
-        public static async Task<PaqueteRespuestaRegistro> Manejar(PaquetePeticionRegistro paquete)
+        public static async Task<PaqueteRespuestaRegistro> Manejar(PaquetePeticionRegistro paquete, NetPeer peer)
         {
             PaqueteRespuestaRegistro respuesta = new PaqueteRespuestaRegistro();
 
@@ -76,7 +79,13 @@ namespace Server.Red.Handlers
 
             if (!respuesta.Exitoso)
                 return respuesta;
-            await _servicio.registrar_jugador(paquete.Email, paquete.Usuario, paquete.Clave, respuesta);
+            Jugador? jugador = await _servicio.registrar_jugador(paquete.Email, paquete.Usuario, paquete.Clave, respuesta);
+            if (jugador != null)
+            {
+                Sesion sesion = SesionManager.CrearSesion(jugador.Id, jugador.NombreUsuario, peer);
+                respuesta.Token = sesion.Token;
+            };
+            Console.WriteLine($"Respuesta: {respuesta.Exitoso} _ {respuesta.MensajeError} : {respuesta.Token}");
             return respuesta;
         }
     }

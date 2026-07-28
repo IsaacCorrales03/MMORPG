@@ -1,6 +1,8 @@
 using System.Text;
 using System.Text.Json;
 using LiteNetLib;
+using LiteNetLib.Utils;
+using Server.Handlers;
 using Server.Red.Handlers;
 using Shared.Paquetes;
 
@@ -8,44 +10,61 @@ namespace Server.Red
 {
     public class Router
     {
-        public static async Task Enrutar(Sobre sobre, NetPeer peer)
+        public static async Task Enrutar(TipoPaquete tipoPaquete, byte[] contenido, NetPeer peer)
         {
-            switch (sobre.TipoDePaquete)
+            switch (tipoPaquete)
             {
                 case TipoPaquete.PeticionInicioSesion:
                     {
-                        var peticion = JsonSerializer.Deserialize<PaquetePeticionInicioSesion>(sobre.Contenido);
+                        var peticion = JsonSerializer.Deserialize<PaquetePeticionInicioSesion>(contenido);
                         if (peticion is null)
                         {
                             Console.WriteLine($"Contenido inválido en PeticionInicioSesion de {peer}");
                             break;
                         }
+                        // ... manejar login
                         break;
                     }
                 case TipoPaquete.PeticionRegistro:
                     {
-                        var peticion = JsonSerializer.Deserialize<PaquetePeticionRegistro>(sobre.Contenido);
+                        var peticion = JsonSerializer.Deserialize<PaquetePeticionRegistro>(contenido);
                         if (peticion is null)
                         {
-                            Console.WriteLine($"Contenido inválido en PaqueteRespuestaRegistro de {peer}");
+                            Console.WriteLine($"Contenido inválido en PeticionRegistro de {peer}");
                             break;
                         }
-                        PaqueteRespuestaRegistro respuesta = await RegisterHandler.Manejar(peticion);
+                        PaqueteRespuestaRegistro respuesta = await RegisterHandler.Manejar(peticion, peer);
                         EnviarPaquete(TipoPaquete.RespuestaRegistro, respuesta, peer);
                         break;
                     }
+                case TipoPaquete.PeticionReanudarSesion:
+                    {
+                        var peticion = JsonSerializer.Deserialize<PaquetePeticionReanudarSesion>(contenido);
+                        if (peticion is null)
+                        {
+                            Console.WriteLine($"Contenido inválido en PeticionReanudarSesion de {peer}");
+                            break;
+                        }
+
+                        PaqueteRespuestaReanudarSesion respuesta = await ResumeSessionHandler.Manejar(peticion, peer);
+                        EnviarPaquete(TipoPaquete.RespuestaReanudarSesion, respuesta,peer);
+                        break;
+                    }
+                default:
+                    Console.WriteLine($"TipoPaquete no manejado ({tipoPaquete}) recibido de {peer}");
+                    break;
             }
         }
 
-        public static void EnviarPaquete(TipoPaquete tipoPaquete, IPaquete paquete, NetPeer peer) 
+        public static void EnviarPaquete(TipoPaquete tipoPaquete, IPaquete paquete, NetPeer peer)
         {
-            Sobre sobre = new Sobre();
-            sobre.TipoDePaquete = tipoPaquete;
-            string paquete_json = JsonSerializer.Serialize(paquete, paquete.GetType());
-            sobre.Contenido = paquete_json;
-            string sobre_json = JsonSerializer.Serialize(sobre);
-            byte[] datos = Encoding.UTF8.GetBytes(sobre_json);
-            peer.Send(datos, DeliveryMethod.ReliableOrdered);
+            byte[] contenido = JsonSerializer.SerializeToUtf8Bytes(paquete, paquete.GetType());
+
+            NetDataWriter writer = new NetDataWriter();
+            writer.Put((byte)tipoPaquete);
+            writer.PutBytesWithLength(contenido);
+
+            peer.Send(writer, DeliveryMethod.ReliableOrdered);
         }
     }
 }

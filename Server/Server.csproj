@@ -20,5 +20,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  <ItemGroup>
+  <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" />
+</ItemGroup>
 
 </Project>
