@@ -1,9 +1,17 @@
-namespace Shared.Paquetes
-{
-    public class PaqueteRespuestaRegistro : IPaquete
+    using MessagePack;
+
+    namespace Shared.Paquetes
     {
-        public bool Exitoso {get; set;} = false;
-        public string MensajeError {get; set;} = "";
-        public string Token {get; set;} = "";
+        [MessagePackObject]
+        public class PaqueteRespuestaRegistro : IPaquete
+        {
+            [Key(0)]
+            public bool Exitoso {get; set;} = false;
+            [Key(1)]
+            public string MensajeError {get; set;} = "";
+            [Key(2)]
+            public string Token {get; set;} = "";
+            [IgnoreMember]
+            public TipoPaquete Tipo => TipoPaquete.RespuestaRegistro;
+        }
     }
-}

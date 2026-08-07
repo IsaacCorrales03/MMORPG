@@ -1,4 +1,4 @@
-namespace Server.Red.Sesiones
+namespace Server.Servicios
 {
     public class TokenGenerator
     {

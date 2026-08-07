@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Server.DBEntities;
 
-namespace Server.Core
+namespace Server.Managers
 {
     public class DataBase : DbContext
     {
@@ -8,7 +9,7 @@ namespace Server.Core
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            options.UseSqlite("Data Source=juego.db");
+            options.UseSqlite("Data Source=game.db");
         }
     }
 }

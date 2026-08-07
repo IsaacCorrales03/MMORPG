@@ -1,7 +1,9 @@
 using System.Collections.Concurrent;
 using LiteNetLib;
+using Server.Servicios;
+using Shared.Tipos;
 
-namespace Server.Red.Sesiones
+namespace Server.Managers
 {
     public class SesionManager
     {

@@ -1,58 +1,60 @@
-using System.Text;
-using System.Text.Json;
-using LiteNetLib;
-using Shared.Paquetes;
-using Godot;
+using System;
+using System.Collections.Generic;
 using Client.Handlers;
-using LiteNetLib.Utils;
+using Godot;
+using LiteNetLib;
+using MessagePack;
+using Shared.Paquetes;
 
 namespace Client.Red
 {
-	public class Router
+	public static class Router
 	{
+		private static readonly Dictionary<TipoPaquete, Type> TiposDePaquete = new()
+		{
+			{ TipoPaquete.RespuestaRegistro, typeof(PaqueteRespuestaRegistro) },
+			{ TipoPaquete.RespuestaInicioSesion, typeof(PaqueteRespuestaInicioSesion) },
+			{ TipoPaquete.RespuestaReanudarSesion, typeof(PaqueteRespuestaReanudarSesion) }
+		};
+
 		public static void Enrutar(TipoPaquete tipoPaquete, byte[] contenido, NetPeer peer)
 		{
-			switch (tipoPaquete)
+			if (!TiposDePaquete.TryGetValue(tipoPaquete, out Type clasePaquete))
 			{
-				case TipoPaquete.RespuestaRegistro:
-					{
-						var respuesta = JsonSerializer.Deserialize<PaqueteRespuestaRegistro>(contenido);
-						if (respuesta is null)
-						{
-							GD.Print("Contenido inválido en RespuestaRegistro");
-							break;
-						}
-						RegisterHandler.Manejar(respuesta);
-						break;
-					}
-				case TipoPaquete.RespuestaReanudarSesion:
-					{
-						var respuesta = JsonSerializer.Deserialize<PaqueteRespuestaReanudarSesion>(contenido);
-						if (respuesta is null)
-						{
-							GD.Print("Contenido invalido en RespuestaReanudarSesion");
-							break;
-						}
-						//
-						break;
-					}
+				GD.Print($"Tipo de paquete no registrado: {tipoPaquete}");
+				return;
+			}
+
+			object resultado;
+
+			try
+			{
+				resultado = MessagePackSerializer.Deserialize(clasePaquete, contenido);
+			}
+			catch (Exception ex)
+			{
+				GD.Print($"Error deserializando paquete {tipoPaquete}: {ex.Message}");
+				return;
+			}
+
+			switch (resultado)
+			{
+				case PaqueteRespuestaRegistro respuesta:
+					RegisterHandler.Manejar(respuesta);
+					break;
+
+				case PaqueteRespuestaInicioSesion respuesta:
+					LoginHandler.Manejar(respuesta);
+					break;
+
+				case PaqueteRespuestaReanudarSesion respuesta:
+					ResumeSesionHandler.Manejar(respuesta);
+					break;
+
 				default:
-					GD.Print($"TipoPaquete no manejado ({tipoPaquete}) recibido del servidor");
+					GD.Print($"No existe un handler para {tipoPaquete}");
 					break;
 			}
-		}
-
-		public static void EnviarPaquete(TipoPaquete tipoPaquete, IPaquete paquete)
-		{
-			NetPeer peer = Conexion.Instance.Peer;
-
-			byte[] contenido = JsonSerializer.SerializeToUtf8Bytes(paquete, paquete.GetType());
-
-			NetDataWriter writer = new NetDataWriter();
-			writer.Put((byte)tipoPaquete);
-			writer.PutBytesWithLength(contenido);
-
-			peer.Send(writer, DeliveryMethod.ReliableOrdered);
 		}
 	}
 }

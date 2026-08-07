@@ -1,67 +1,38 @@
-﻿using System.Text;
-using System.Text.Json;
-using LiteNetLib;
-using Server.Red;
-using Shared.Paquetes;
-using Shared.Utils;
+﻿GameServer servidor = new();
 
-const int MAXIMO_JUGADORES = 20;
+servidor.Start();
 
-var listener = new EventBasedNetListener();
-var server = new NetManager(listener);
-
-server.Start(8455);
-// esto es suscribirme a cuando una conexión es pedida (connection request)
-listener.ConnectionRequestEvent += request =>
+Thread consola = new(() =>
 {
-    // desicidimos si aceptar o no en base a:
-    if (server.ConnectedPeersCount >= MAXIMO_JUGADORES)
+    while (servidor.Running)
     {
-        // maximo de jugadores (20)
-        request.Reject();
-    }
-    else
-    {
-        request.AcceptIfKey(Claves.ClaveServidor);
-    }
-};
+        Console.Write("> ");
+        string? comando = Console.ReadLine();
 
-listener.PeerConnectedEvent += peer =>
+        if (string.IsNullOrWhiteSpace(comando))
+            continue;
+
+        switch (comando.Trim().ToLowerInvariant())
+        {
+            case "stop":
+                servidor.Stop();
+                break;
+
+            default:
+                Console.WriteLine($"Comando desconocido: {comando}");
+                break;
+        }
+    }
+});
+
+consola.IsBackground = true;
+consola.Start();
+
+while (servidor.Running)
 {
-    Console.WriteLine($"Nueva conexión {peer}");
-};
+    servidor.Update();
 
-listener.PeerDisconnectedEvent += async (peer, disconnectionInfo) =>
-{
-    Console.WriteLine($"Se desconectó: {peer}, razón: {disconnectionInfo.Reason}");
-};
-
-listener.NetworkReceiveEvent += async (peer, reader, channel, deliveryMethod) =>
-{
-    try
-    {
-        TipoPaquete tipo = (TipoPaquete)reader.GetByte();
-        byte[] contenido = reader.GetBytesWithLength();
-
-        await Router.Enrutar(tipo, contenido, peer);
-    }
-    catch (JsonException ex)
-    {
-        Console.WriteLine($"Error deserializando paquete de {peer}: {ex.Message}");
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Error inesperado procesando paquete de {peer}: {ex}");
-    }
-    finally
-    {
-        reader.Recycle();
-    }
-};
-
-while (!Console.KeyAvailable)
-{
-    server.PollEvents();
-    Thread.Sleep(20);
+    Thread.Sleep(1); // Evita consumir el 100% de la CPU
 }
-server.Stop();
+
+consola.Join();

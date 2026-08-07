@@ -1,9 +1,30 @@
 [gd_scene format=3 uid="uid://cwl3a8arnqumw"]
 
-[ext_resource type="Texture2D" uid="uid://crl35xffv60qx" path="res://Assets/Images/BGND.png" id="1_b3cqc"]
-[ext_resource type="Texture2D" uid="uid://cbt1p28cwkhwo" path="res://Assets/Images/logo.png" id="2_hvb8w"]
+[ext_resource type="Script" uid="uid://dt0x0nwy7jqjo" path="res://Game/Cargando.cs" id="1_6ufp2"]
+[ext_resource type="Texture2D" uid="uid://cv7um1scel4mj" path="res://Assets/Images/Fondo.png" id="4_ysv47"]
+[ext_resource type="FontFile" uid="uid://ckukl3m3uu83o" path="res://Assets/Fonts/JetBrainsMono-Regular.ttf" id="5_o2blc"]
+[ext_resource type="Shader" uid="uid://crfl2uk7m31y5" path="res://Assets/Shaders/loading_screen.gdshader" id="5_oxjdn"]
+[ext_resource type="FontFile" uid="uid://cbh3j85ttick4" path="res://Assets/Fonts/Cinzel-ExtraBold.ttf" id="6_x73jc"]
+[ext_resource type="FontFile" uid="uid://b4rpr5o6xy55n" path="res://Assets/Fonts/Inter_18pt-Regular.ttf" id="7_42i4c"]
 
-[node name="PantallaCarga" type="Control" unique_id=249251877]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_te065"]
+shader = ExtResource("5_oxjdn")
+shader_parameter/start = 0.0
+shader_parameter/darkness = 1.0
+
+[node name="PantallaCarga" type="CanvasLayer" unique_id=1822784241]
+layer = 10
+script = ExtResource("1_6ufp2")
+_rootPath = NodePath("LoadingScreen")
+_statusLabelPath = NodePath("LoadingScreen/StatusRow/StatusLabel")
+_spinnerIconPath = NodePath("LoadingScreen/StatusRow/SpinnerIcon")
+_tipLabelPath = NodePath("LoadingScreen/TipsPanel/HBoxContainer/TipLabel")
+_errorPopupPath = NodePath("LoadingScreen/ErrorPopup")
+_errorLabelPath = NodePath("LoadingScreen/ErrorPopup/VBoxContainer/ErrorLabel")
+_btnReintentarPath = NodePath("LoadingScreen/ErrorPopup/VBoxContainer/HBoxContainer/BtnReintentar")
+_btnCancelarPath = NodePath("LoadingScreen/ErrorPopup/VBoxContainer/HBoxContainer/BtnCancelar")
+
+[node name="LoadingScreen" type="Control" parent="." unique_id=147223628]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,25 +32,170 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Fondo" type="TextureRect" parent="." unique_id=1706669927]
+[node name="Background" type="TextureRect" parent="LoadingScreen" unique_id=726719870]
+layout_mode = 0
+offset_right = 1919.0
+offset_bottom = 1082.0
+texture = ExtResource("4_ysv47")
+stretch_mode = 6
+
+[node name="BottomGradient" type="ColorRect" parent="LoadingScreen" unique_id=1142964725]
+material = SubResource("ShaderMaterial_te065")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("1_b3cqc")
 
-[node name="TextureRect" type="TextureRect" parent="." unique_id=1484467228]
+[node name="TitleContainer" type="VBoxContainer" parent="LoadingScreen" unique_id=1428109457]
 layout_mode = 1
-anchors_preset = 12
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_top = 100.0
+offset_right = 20.0
+offset_bottom = 140.0
+grow_horizontal = 2
+
+[node name="TitleLabel" type="Label" parent="LoadingScreen/TitleContainer" unique_id=1623015069]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.83137256, 0.63529414, 0.29803923, 1)
+theme_override_fonts/font = ExtResource("6_x73jc")
+theme_override_font_sizes/font_size = 128
+text = "ASTERA"
+
+[node name="ServerInfoChip" type="PanelContainer" parent="LoadingScreen" unique_id=153298395]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -530.0
+offset_bottom = 23.0
+grow_horizontal = 0
+
+[node name="ServerInfoLabel" type="Label" parent="LoadingScreen/ServerInfoChip" unique_id=1913925668]
+layout_mode = 2
+
+[node name="TipsPanel" type="PanelContainer" parent="LoadingScreen" unique_id=306066206]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 80.0
+offset_top = -300.0
+offset_right = 160.0
+offset_bottom = -260.0
+grow_vertical = 0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="LoadingScreen/TipsPanel" unique_id=510617090]
+layout_mode = 2
+
+[node name="TipIcon" type="TextureRect" parent="LoadingScreen/TipsPanel/HBoxContainer" unique_id=1088985594]
+layout_mode = 2
+
+[node name="TipLabel" type="Label" parent="LoadingScreen/TipsPanel/HBoxContainer" unique_id=1308463945]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("7_42i4c")
+theme_override_font_sizes/font_size = 24
+text = "TIP"
+
+[node name="StatusRow" type="HBoxContainer" parent="LoadingScreen" unique_id=1510579499]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -100.5
+offset_top = -140.0
+offset_right = 100.5
+offset_bottom = -100.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="SpinnerIcon" type="TextureRect" parent="LoadingScreen/StatusRow" unique_id=394758163]
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="LoadingScreen/StatusRow" unique_id=1085767773]
+layout_mode = 2
+text = "Conectando al servidor..."
+
+[node name="PercentLabel" type="Label" parent="LoadingScreen/StatusRow" unique_id=771031444]
+layout_mode = 2
+
+[node name="ProgressBar" type="ProgressBar" parent="LoadingScreen" unique_id=746363321]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -388.0
+offset_top = -27.0
+offset_right = 372.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="VersionLabel" type="Label" parent="LoadingScreen" unique_id=1436151274]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -6.0
-offset_top = -1348.0
-offset_right = -6.0
-offset_bottom = -324.0
-grow_horizontal = 2
+offset_left = -40.0
+offset_top = -25.0
+grow_horizontal = 0
 grow_vertical = 0
-texture = ExtResource("2_hvb8w")
+theme_override_fonts/font = ExtResource("5_o2blc")
+theme_override_font_sizes/font_size = 18
+
+[node name="ErrorPopup" type="Panel" parent="LoadingScreen" unique_id=2018024279]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -375.0
+offset_top = -135.0
+offset_right = 375.0
+offset_bottom = 135.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="LoadingScreen/ErrorPopup" unique_id=659817177]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ErrorLabel" type="Label" parent="LoadingScreen/ErrorPopup/VBoxContainer" unique_id=1544460360]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 2
+theme_override_fonts/font = ExtResource("7_42i4c")
+theme_override_font_sizes/font_size = 24
+text = "No se pudo establecer conexión con el servidor"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="LoadingScreen/ErrorPopup/VBoxContainer" unique_id=1033407435]
+layout_mode = 2
+theme_override_constants/separation = 500
+alignment = 1
+
+[node name="BtnReintentar" type="Button" parent="LoadingScreen/ErrorPopup/VBoxContainer/HBoxContainer" unique_id=1866520653]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Reintentar"
+
+[node name="BtnCancelar" type="Button" parent="LoadingScreen/ErrorPopup/VBoxContainer/HBoxContainer" unique_id=825269295]
+layout_mode = 2
+text = "Cancelar
+"

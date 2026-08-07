@@ -1,6 +1,6 @@
 using LiteNetLib;
 
-namespace Server.Red.Sesiones
+namespace Shared.Tipos
 {
     public class Sesion
     {

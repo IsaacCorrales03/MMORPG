@@ -1,70 +1,59 @@
-using System.Text;
-using System.Text.Json;
 using LiteNetLib;
-using LiteNetLib.Utils;
+using MessagePack;
 using Server.Handlers;
-using Server.Red.Handlers;
 using Shared.Paquetes;
 
 namespace Server.Red
 {
-    public class Router
+    public class PacketRouter
     {
-        public static async Task Enrutar(TipoPaquete tipoPaquete, byte[] contenido, NetPeer peer)
+        public static readonly Dictionary<TipoPaquete, Type> TiposDePaquete = new() {
+            { TipoPaquete.PeticionInicioSesion, typeof(PaquetePeticionInicioSesion) },
+            { TipoPaquete.RespuestaInicioSesion, typeof(PaqueteRespuestaInicioSesion) },
+            { TipoPaquete.PeticionRegistro, typeof(PaquetePeticionRegistro) },
+            { TipoPaquete.RespuestaRegistro, typeof(PaqueteRespuestaRegistro)},
+            { TipoPaquete.PeticionReanudarSesion, typeof(PaquetePeticionReanudarSesion)},
+            { TipoPaquete.RespuestaReanudarSesion, typeof(PaqueteRespuestaReanudarSesion) }
+
+        };
+        public static readonly Dictionary<TipoPaquete, IPacketHandler> PacketHandlers = new()
         {
-            switch (tipoPaquete)
+            {TipoPaquete.PeticionInicioSesion, new LoginHandler()},
+            {TipoPaquete.PeticionRegistro, new RegisterHandler()}
+        };
+
+        public static async Task Enrutar(TipoPaquete tipo, byte[] contenido, NetPeer peer)
+        {
+            if (!TiposDePaquete.TryGetValue(tipo, out Type? clasePaquete))
             {
-                case TipoPaquete.PeticionInicioSesion:
-                    {
-                        var peticion = JsonSerializer.Deserialize<PaquetePeticionInicioSesion>(contenido);
-                        if (peticion is null)
-                        {
-                            Console.WriteLine($"Contenido inválido en PeticionInicioSesion de {peer}");
-                            break;
-                        }
-                        // ... manejar login
-                        break;
-                    }
-                case TipoPaquete.PeticionRegistro:
-                    {
-                        var peticion = JsonSerializer.Deserialize<PaquetePeticionRegistro>(contenido);
-                        if (peticion is null)
-                        {
-                            Console.WriteLine($"Contenido inválido en PeticionRegistro de {peer}");
-                            break;
-                        }
-                        PaqueteRespuestaRegistro respuesta = await RegisterHandler.Manejar(peticion, peer);
-                        EnviarPaquete(TipoPaquete.RespuestaRegistro, respuesta, peer);
-                        break;
-                    }
-                case TipoPaquete.PeticionReanudarSesion:
-                    {
-                        var peticion = JsonSerializer.Deserialize<PaquetePeticionReanudarSesion>(contenido);
-                        if (peticion is null)
-                        {
-                            Console.WriteLine($"Contenido inválido en PeticionReanudarSesion de {peer}");
-                            break;
-                        }
-
-                        PaqueteRespuestaReanudarSesion respuesta = await ResumeSessionHandler.Manejar(peticion, peer);
-                        EnviarPaquete(TipoPaquete.RespuestaReanudarSesion, respuesta,peer);
-                        break;
-                    }
-                default:
-                    Console.WriteLine($"TipoPaquete no manejado ({tipoPaquete}) recibido de {peer}");
-                    break;
+                Console.WriteLine($"Tipo de paquete no registrado: {tipo}");
+                return;
             }
-        }
 
-        public static void EnviarPaquete(TipoPaquete tipoPaquete, IPaquete paquete, NetPeer peer)
-        {
-            byte[] contenido = JsonSerializer.SerializeToUtf8Bytes(paquete, paquete.GetType());
+            object? resultado;
+            try
+            {
+                resultado = MessagePackSerializer.Deserialize(clasePaquete, contenido);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deserializando paquete {tipo}: {ex.Message}");
+                return;
+            }
 
-            NetDataWriter writer = new NetDataWriter();
-            writer.Put((byte)tipoPaquete);
-            writer.PutBytesWithLength(contenido);
+            if (resultado is not IPaquete paquete)
+            {
+                Console.WriteLine($"No existe un tipo registrado para {tipo}.");
+                return;
+            }
 
-            peer.Send(writer, DeliveryMethod.ReliableOrdered);
+            if (!PacketHandlers.TryGetValue(tipo, out IPacketHandler? handler))
+            {
+                Console.WriteLine($"No existe un handler registrado para {tipo}.");
+                return;
+            }
+
+            await handler.Handle(peer, paquete);
         }
     }
 }

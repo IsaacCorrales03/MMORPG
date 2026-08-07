@@ -8,5 +8,6 @@ namespace Shared.Paquetes
         public string NombreUsuario {get; set;} = "";
         
         public Vector2 Posicion {get; set;}
+        public TipoPaquete Tipo {get;} = TipoPaquete.AparecerJugador;
     }
 }

@@ -4,15 +4,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Server.Core;
+using Server.Managers;
 
 #nullable disable
 
 namespace Server.Migrations
 {
     [DbContext(typeof(DataBase))]
-    [Migration("20260726014543_CrearTablaJugadores")]
-    partial class CrearTablaJugadores
+    [Migration("20260806201504_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,11 +20,15 @@ namespace Server.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.10");
 
-            modelBuilder.Entity("Server.Core.Jugador", b =>
+            modelBuilder.Entity("Server.DBEntities.Jugador", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("TEXT");

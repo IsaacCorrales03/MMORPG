@@ -1,11 +1,16 @@
 {
   "version": 2,
-  "dgSpecHash": "qZ90Gm1a084=",
+  "dgSpecHash": "c2ZIsxB/Q10=",
   "success": true,
-  "projectFilePath": "/mnt/Disco2/MMORPG/Shared/Shared.csproj",
+  "projectFilePath": "/mnt/HDD/MMORPG/Shared/Shared.csproj",
   "expectedPackageFiles": [
-    "/home/Cherry/.nuget/packages/microsoft.netcore.app.ref/8.0.28/microsoft.netcore.app.ref.8.0.28.nupkg.sha512",
-    "/home/Cherry/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.28/microsoft.aspnetcore.app.ref.8.0.28.nupkg.sha512"
+    "/home/Cherry/.nuget/packages/litenetlib/2.1.4/litenetlib.2.1.4.nupkg.sha512",
+    "/home/Cherry/.nuget/packages/messagepack/3.1.8/messagepack.3.1.8.nupkg.sha512",
+    "/home/Cherry/.nuget/packages/messagepack.annotations/3.1.8/messagepack.annotations.3.1.8.nupkg.sha512",
+    "/home/Cherry/.nuget/packages/messagepackanalyzer/3.1.8/messagepackanalyzer.3.1.8.nupkg.sha512",
+    "/home/Cherry/.nuget/packages/microsoft.net.stringtools/17.11.4/microsoft.net.stringtools.17.11.4.nupkg.sha512",
+    "/home/Cherry/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.28/microsoft.aspnetcore.app.ref.8.0.28.nupkg.sha512",
+    "/home/Cherry/.nuget/packages/microsoft.netcore.app.ref/8.0.28/microsoft.netcore.app.ref.8.0.28.nupkg.sha512"
   ],
   "logs": []
 }

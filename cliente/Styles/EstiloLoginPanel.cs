@@ -4,6 +4,7 @@ using Client.Juego;
 using Client.Red;
 using Godot;
 using Shared.Paquetes;
+using Shared.Utils;
 
 public partial class EstiloLoginPanel : Control
 {
@@ -73,7 +74,7 @@ public partial class EstiloLoginPanel : Control
 		paquete.Usuario = usuario;
 		paquete.Clave = clave;
 		paquete.Email = email;
-		Router.EnviarPaquete(TipoPaquete.PeticionRegistro, paquete);
+		PacketSender.EnviarTCP(Conexion.Instance.Peer, paquete);
 	}
 
 	private void AplicarFondoGeneral()

@@ -11,14 +11,14 @@ config_version=5
 [application]
 
 config/name="Cliente"
-run/main_scene="uid://clyrhp0l0msj7"
+run/main_scene="uid://cwl3a8arnqumw"
 config/features=PackedStringArray("4.7", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
-Conexion="*uid://d18w454akmc6n"
 GameState="*uid://8h8vqw1qtmdy"
+Cliente="*uid://cqgcv6ap3lh5e"
 
 [display]
 

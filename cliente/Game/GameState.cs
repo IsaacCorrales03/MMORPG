@@ -9,11 +9,16 @@ namespace Client.Juego
         public static string NombreUsuario {get; set;}
         public static int? IdUsuario {get; set;}
         
+        public static bool Conectado {get; set;}
+        public static bool SesionReanudada {get; set;}
         [Signal] public delegate void RegistroExitosoEventHandler();
         [Signal] public delegate void RegistroFallidoEventHandler(string mensaje);
 
-        [Signal] public delegate void SesionReanudadaExitosoEventHandler();
-        [Signal] public delegate void SesionReanudadaFallidoEventHandler(string mensaje);
+        [Signal] public delegate void SesionReanudadaExitosaEventHandler();
+        [Signal] public delegate void SesionReanudadaFallidaEventHandler(string mensaje);
+        
+        [Signal] public delegate void InicioSesionExitosoEventHandler();
+        [Signal] public delegate void InicioSesionFallidoEventHandler();
         
         public string TokenSesion;
 

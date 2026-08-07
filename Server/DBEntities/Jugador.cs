@@ -1,5 +1,4 @@
-
-namespace Server.Core
+namespace Server.DBEntities
 {
     public class Jugador
     {

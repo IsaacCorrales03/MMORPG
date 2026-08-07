@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/mnt/Disco2/MMORPG/Shared/Shared.csproj": {}
+    "/mnt/HDD/MMORPG/Shared/Shared.csproj": {}
   },
   "projects": {
-    "/mnt/Disco2/MMORPG/Shared/Shared.csproj": {
+    "/mnt/HDD/MMORPG/Shared/Shared.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/mnt/Disco2/MMORPG/Shared/Shared.csproj",
+        "projectUniqueName": "/mnt/HDD/MMORPG/Shared/Shared.csproj",
         "projectName": "Shared",
-        "projectPath": "/mnt/Disco2/MMORPG/Shared/Shared.csproj",
+        "projectPath": "/mnt/HDD/MMORPG/Shared/Shared.csproj",
         "packagesPath": "/home/Cherry/.nuget/packages/",
-        "outputPath": "/mnt/Disco2/MMORPG/Shared/obj/",
+        "outputPath": "/mnt/HDD/MMORPG/Shared/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/Cherry/.nuget/NuGet/NuGet.Config"
@@ -44,6 +44,16 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
+          "dependencies": {
+            "LiteNetLib": {
+              "target": "Package",
+              "version": "[2.1.4, )"
+            },
+            "MessagePack": {
+              "target": "Package",
+              "version": "[3.1.8, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
