@@ -31,7 +31,7 @@ public partial class Cliente : Node
 		Autenticando,
 		Autenticado
 	}
-	private EstadoConexion estadoConexion;
+	private EstadoConexion estadoConexion = EstadoConexion.Desconectado;
 	private EstadoAutenticacion estadoAutenticacion;
 	private Timer _timeoutConexion;
 	private const float SegundosTimeout = 8f;
@@ -42,7 +42,12 @@ public partial class Cliente : Node
 	public override void _Ready()
 	{
 		Instancia = this;
-		Conectar();
+		IniciarTimeoutDeConexion();
+		
+	}
+	public EstadoConexion get_status()
+	{
+		return estadoConexion;
 	}
 	public override void _Process(double delta)
 	{
@@ -52,10 +57,11 @@ public partial class Cliente : Node
 	{
 		_server?.Stop();
 	}
+	
 	private void CambiarEstadoConexion(EstadoConexion estado)
 	{
 		estadoConexion = estado;
-		GD.Print($"Estado de conexion2: {estadoConexion}");
+		GD.Print($"Estado de conexion: {estadoConexion}");
 		OnEstadoConexionCambiado?.Invoke(estado);
 	}
 	private void CambiarEstadoAutenticacion(EstadoAutenticacion estado)

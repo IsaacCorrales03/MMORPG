@@ -1,5 +1,4 @@
 using Shared.Tipos;
-
 namespace Shared.Paquetes
 {
     public class PaqueteAparecerJugador : IPaquete

@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cwl3a8arnqumw"]
 
 [ext_resource type="Script" uid="uid://dt0x0nwy7jqjo" path="res://Game/Cargando.cs" id="1_6ufp2"]
-[ext_resource type="Texture2D" uid="uid://cv7um1scel4mj" path="res://Assets/Images/Fondo.png" id="4_ysv47"]
+[ext_resource type="Texture2D" uid="uid://c11mcr33xfo5q" path="res://Assets/Fondos/david-edwards-kenden-001.jpg" id="2_6ufp2"]
 [ext_resource type="FontFile" uid="uid://ckukl3m3uu83o" path="res://Assets/Fonts/JetBrainsMono-Regular.ttf" id="5_o2blc"]
 [ext_resource type="Shader" uid="uid://crfl2uk7m31y5" path="res://Assets/Shaders/loading_screen.gdshader" id="5_oxjdn"]
 [ext_resource type="FontFile" uid="uid://cbh3j85ttick4" path="res://Assets/Fonts/Cinzel-ExtraBold.ttf" id="6_x73jc"]
@@ -12,17 +12,23 @@ shader = ExtResource("5_oxjdn")
 shader_parameter/start = 0.0
 shader_parameter/darkness = 1.0
 
-[node name="PantallaCarga" type="CanvasLayer" unique_id=1822784241]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6ufp2"]
+bg_color = Color(0, 0, 0, 0.41960785)
+corner_radius_top_left = 50
+corner_radius_bottom_left = 50
+
+[node name="PantallaCarga" type="CanvasLayer" unique_id=1822784241 node_paths=PackedStringArray("_root", "_statusLabel", "_spinnerIcon", "_tipLabel", "_errorPopup", "_errorLabel", "_btnReintentar", "_btnCancelar", "_serverInfo")]
 layer = 10
 script = ExtResource("1_6ufp2")
-_rootPath = NodePath("LoadingScreen")
-_statusLabelPath = NodePath("LoadingScreen/StatusRow/StatusLabel")
-_spinnerIconPath = NodePath("LoadingScreen/StatusRow/SpinnerIcon")
-_tipLabelPath = NodePath("LoadingScreen/TipsPanel/HBoxContainer/TipLabel")
-_errorPopupPath = NodePath("LoadingScreen/ErrorPopup")
-_errorLabelPath = NodePath("LoadingScreen/ErrorPopup/VBoxContainer/ErrorLabel")
-_btnReintentarPath = NodePath("LoadingScreen/ErrorPopup/VBoxContainer/HBoxContainer/BtnReintentar")
-_btnCancelarPath = NodePath("LoadingScreen/ErrorPopup/VBoxContainer/HBoxContainer/BtnCancelar")
+_root = NodePath("LoadingScreen")
+_statusLabel = NodePath("LoadingScreen/StatusRow/StatusLabel")
+_spinnerIcon = NodePath("LoadingScreen/StatusRow/SpinnerIcon")
+_tipLabel = NodePath("LoadingScreen/TipsPanel/HBoxContainer/TipLabel")
+_errorPopup = NodePath("LoadingScreen/ErrorPopup")
+_errorLabel = NodePath("LoadingScreen/ErrorPopup/VBoxContainer/ErrorLabel")
+_btnReintentar = NodePath("LoadingScreen/ErrorPopup/VBoxContainer/HBoxContainer/BtnReintentar")
+_btnCancelar = NodePath("LoadingScreen/ErrorPopup/VBoxContainer/HBoxContainer/BtnCancelar")
+_serverInfo = NodePath("LoadingScreen/ServerInfoChip/ServerInfoLabel")
 
 [node name="LoadingScreen" type="Control" parent="." unique_id=147223628]
 layout_mode = 3
@@ -34,10 +40,9 @@ grow_vertical = 2
 
 [node name="Background" type="TextureRect" parent="LoadingScreen" unique_id=726719870]
 layout_mode = 0
-offset_right = 1919.0
+offset_right = 2000.0
 offset_bottom = 1082.0
-texture = ExtResource("4_ysv47")
-stretch_mode = 6
+texture = ExtResource("2_6ufp2")
 
 [node name="BottomGradient" type="ColorRect" parent="LoadingScreen" unique_id=1142964725]
 material = SubResource("ShaderMaterial_te065")
@@ -63,7 +68,7 @@ grow_horizontal = 2
 layout_mode = 2
 theme_override_colors/font_color = Color(0.83137256, 0.63529414, 0.29803923, 1)
 theme_override_fonts/font = ExtResource("6_x73jc")
-theme_override_font_sizes/font_size = 128
+theme_override_font_sizes/font_size = 250
 text = "ASTERA"
 
 [node name="ServerInfoChip" type="PanelContainer" parent="LoadingScreen" unique_id=153298395]
@@ -71,12 +76,17 @@ layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -530.0
-offset_bottom = 23.0
+offset_left = -226.0
+offset_bottom = 64.0
 grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_6ufp2")
 
 [node name="ServerInfoLabel" type="Label" parent="LoadingScreen/ServerInfoChip" unique_id=1913925668]
 layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Ping: 999 ms"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="TipsPanel" type="PanelContainer" parent="LoadingScreen" unique_id=306066206]
 layout_mode = 1
@@ -120,7 +130,9 @@ layout_mode = 2
 
 [node name="StatusLabel" type="Label" parent="LoadingScreen/StatusRow" unique_id=1085767773]
 layout_mode = 2
-text = "Conectando al servidor..."
+theme_override_font_sizes/font_size = 32
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="PercentLabel" type="Label" parent="LoadingScreen/StatusRow" unique_id=771031444]
 layout_mode = 2
@@ -153,7 +165,6 @@ theme_override_fonts/font = ExtResource("5_o2blc")
 theme_override_font_sizes/font_size = 18
 
 [node name="ErrorPopup" type="Panel" parent="LoadingScreen" unique_id=2018024279]
-visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5

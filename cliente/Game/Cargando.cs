@@ -1,72 +1,55 @@
 using Godot;
+using LiteNetLib;
 
 public partial class Cargando : CanvasLayer
 {
-	[Export] private NodePath _rootPath;
-	[Export] private NodePath _statusLabelPath;
-	[Export] private NodePath _spinnerIconPath;
-	[Export] private NodePath _tipLabelPath;
-
-	[Export] private NodePath _errorPopupPath;
-	[Export] private NodePath _errorLabelPath;
-	[Export] private NodePath _btnReintentarPath;
-	[Export] private NodePath _btnCancelarPath;
-
-	private Control _root;
-	private Label _statusLabel;
-	private TextureRect _spinnerIcon;
-	private Label _tipLabel;
-
-	private Panel _errorPopup;
-	private Label _errorLabel;
-	private Button _btnReintentar;
-	private Button _btnCancelar;
-
+	[Export] private Control _root;
+	[Export] private Label _statusLabel;
+	[Export] private TextureRect _spinnerIcon;
+	[Export] private Label _tipLabel;
+	[Export] private Panel _errorPopup;
+	[Export] private Label _errorLabel;
+	[Export] private Button _btnReintentar;
+	[Export] private Button _btnCancelar;
+	[Export] private Label _serverInfo;
+	[Export] private ProgressBar _progressBar;
+	
 	private Tween _spinnerTween;
 	private Timer _tipTimer;
+	private Timer _pingTimer;
+	private int _tipIndex = 0;
 
 	private readonly string[] _tips = new[]
 	{
-		"Astera se sostiene sobre cinco reinos que dejaron de hablarse hace tres generaciones.",
-		"Verdia fue el primer reino en cerrar sus fronteras. Nadie recuerda por qué.",
-		"No todos los magos de Astera nacen sabiendo que lo son.",
+		"Azura es el continente más estable de todo Astera",
+		"Hablar con los sabios podría potenciar tus hechizos...",
+		"Cada espadazo que aciertes aumentará tu técnica con la espada",
+		"No se trata de lo que logras, si no de con quien lo logras..."
 	};
-	private int _tipIndex = 0;
 
 	public override void _Ready()
 	{
-		_root = GetNode<Control>(_rootPath);
-		_statusLabel = GetNode<Label>(_statusLabelPath);
-		_spinnerIcon = GetNode<TextureRect>(_spinnerIconPath);
-		_tipLabel = GetNode<Label>(_tipLabelPath);
-
-		_errorPopup = GetNode<Panel>(_errorPopupPath);
-		_errorLabel = GetNode<Label>(_errorLabelPath);
-		_btnReintentar = GetNode<Button>(_btnReintentarPath);
-		_btnCancelar = GetNode<Button>(_btnCancelarPath);
 
 		_errorPopup.Visible = false;
 		_btnReintentar.Pressed += Reintentar;
 		_btnCancelar.Pressed += () => CambiarEscena("res://Escenas/Login.tscn");
-
+		
 		FadeIn();
-		StartSpinner();
 		StartTipRotation();
 
-		_statusLabel.Text = "Conectando al servidor...";
-
-		Conexion.Instance.OnEstadoCambiado += ManejarCambioDeEstado;
-		Conexion.Instance.Connect();
+		IniciarActualizacionPing();
+		Cliente.Instancia.OnEstadoConexionCambiado += ManejarCambioDeEstadoConexion;
+		Cliente.Instancia.Conectar();
 	}
+
+	
 
 	public override void _ExitTree()
 	{
 		if (Conexion.Instance != null)
-			Conexion.Instance.OnEstadoCambiado -= ManejarCambioDeEstado;
-
+			Cliente.Instancia.OnEstadoConexionCambiado -= ManejarCambioDeEstadoConexion;
 		if (_tipTimer != null)
 			_tipTimer.Timeout -= RotarTip;
-
 		if (_btnReintentar != null)
 			_btnReintentar.Pressed -= Reintentar;
 	}
@@ -79,12 +62,6 @@ public partial class Cargando : CanvasLayer
 			 .SetEase(Tween.EaseType.Out);
 	}
 
-	private void StartSpinner()
-	{
-		_spinnerTween = CreateTween().SetLoops();
-		_spinnerTween.TweenProperty(_spinnerIcon, "rotation", Mathf.Tau, 0.9f)
-					  .SetTrans(Tween.TransitionType.Linear);
-	}
 
 	private void StartTipRotation()
 	{
@@ -93,7 +70,29 @@ public partial class Cargando : CanvasLayer
 		_tipTimer.Timeout += RotarTip;
 		_tipLabel.Text = _tips[0];
 	}
+	private void IniciarActualizacionPing()
+	{
+		_pingTimer = new Timer
+		{
+			WaitTime = 1.0,
+			OneShot = false
+		};
 
+		AddChild(_pingTimer);
+
+		_pingTimer.Timeout += ActualizarPing;
+
+		_pingTimer.Start();
+	}
+
+	private void ActualizarPing()
+	{
+		if (Cliente.Instancia.Peer == null || Cliente.Instancia.Peer.ConnectionState != ConnectionState.Connected)
+			return;
+
+		GD.Print($"Ping: {Cliente.Instancia.Peer.Ping} ms");
+		_serverInfo.Text = $"Ping: {Cliente.Instancia.Peer.Ping} ms";
+	}
 	private void RotarTip()
 	{
 		_tipIndex = (_tipIndex + 1) % _tips.Length;
@@ -103,29 +102,49 @@ public partial class Cargando : CanvasLayer
 		tween.TweenProperty(_tipLabel, "modulate:a", 1f, 0.15f);
 	}
 
-	private void ManejarCambioDeEstado(Conexion.EtapaConexion etapa, string mensaje)
+	private void ManejarCambioDeEstadoConexion(Cliente.EstadoConexion estado)
 	{
-		switch (etapa)
+		switch (estado)
 		{
-			case Conexion.EtapaConexion.Conectando:
+			case Cliente.EstadoConexion.Conectando:
 				_statusLabel.Text = "Conectando al servidor...";
 				break;
-			case Conexion.EtapaConexion.Autenticando:
-				_statusLabel.Text = "Autenticando...";
+			case Cliente.EstadoConexion.Conectado:
+				_statusLabel.Text = "Conectado correctamente";
 				break;
-			case Conexion.EtapaConexion.Listo:
-				_statusLabel.Text = "Listo";
-				CambiarEscena("res://Escenas/MenuPrincipal.tscn");
+			case Cliente.EstadoConexion.Fallida:
+				_statusLabel.Text = "Desconectado";
+				MostrarError("No se pudo establecer conexión con el servidor.");
 				break;
-			case Conexion.EtapaConexion.Fallido:
-				MostrarError(mensaje ?? "No se pudo establecer conexión con el servidor.");
+			case Cliente.EstadoConexion.Desconectado:
+				_statusLabel.Text = "No se pudo establecer la conexión con el servidor";
+				MostrarError("No se pudo establecer conexión con el servidor.");
+				break;
+			default:
+				break;
+		}
+	}
+
+	private void ManejarCambioDeEstadoAutenticacion(Cliente.EstadoAutenticacion estado)
+	{
+		switch (estado)
+		{
+			case Cliente.EstadoAutenticacion.Autenticando:
+				_statusLabel.Text = "Autenticando sesión";
+				break;
+			case Cliente.EstadoAutenticacion.NoAutenticado:
+				_statusLabel.Text = "No se pudo autenticar";
+				break;
+			case Cliente.EstadoAutenticacion.Autenticado:
+				_statusLabel.Text = "Sesion autenticada";
+				break;
+			default:
 				break;
 		}
 	}
 
 	private void MostrarError(string mensaje)
 	{
-		_spinnerTween.Pause();
 		_errorLabel.Text = mensaje;
 		_errorPopup.Visible = true;
 		_errorPopup.Modulate = new Color(1, 1, 1, 0);
