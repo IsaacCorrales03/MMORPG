@@ -1,0 +1,69 @@
+[gd_resource type="Theme" format=3 uid="uid://b4tlea45tncdb"]
+
+[ext_resource type="FontFile" uid="uid://b4rpr5o6xy55n" path="res://Assets/Fonts/Inter_18pt-Regular.ttf" id="1_lolvh"]
+[ext_resource type="FontFile" uid="uid://cbh3j85ttick4" path="res://Assets/Fonts/Cinzel-ExtraBold.ttf" id="1_q7x6j"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_m6ido"]
+bg_color = Color(0.7882353, 0.47843137, 0.23921569, 0.24705882)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.47843137, 0.23921569, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_csu3p"]
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.47843137, 0.23921569, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q7x6j"]
+content_margin_top = 6.0
+content_margin_bottom = 10.0
+bg_color = Color(0, 0, 0, 0)
+border_width_bottom = 3
+border_color = Color(0.7882353, 0.47843137, 0.23921569, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lolvh"]
+content_margin_top = 6.0
+content_margin_bottom = 10.0
+bg_color = Color(0, 0, 0, 0)
+border_width_bottom = 2
+border_color = Color(0.5411765, 0.41568628, 0.23137255, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_uxlki"]
+bg_color = Color(0.105882354, 0.08627451, 0.06666667, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.5411765, 0.41568628, 0.23137255, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_size = 24
+
+[resource]
+Button/font_sizes/font_size = 40
+Button/fonts/font = ExtResource("1_q7x6j")
+Button/styles/hover = SubResource("StyleBoxFlat_m6ido")
+Button/styles/normal = SubResource("StyleBoxFlat_csu3p")
+Label/colors/font_color = Color(0.54901963, 0.5176471, 0.47058824, 1)
+Label/font_sizes/font_size = 48
+Label/fonts/font = ExtResource("1_lolvh")
+LineEdit/font_sizes/font_size = 34
+LineEdit/fonts/font = ExtResource("1_lolvh")
+LineEdit/styles/focus = SubResource("StyleBoxFlat_q7x6j")
+LineEdit/styles/normal = SubResource("StyleBoxFlat_lolvh")
+Panel/styles/panel = SubResource("StyleBoxFlat_uxlki")

@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" uid="uid://dt0x0nwy7jqjo" path="res://Game/Cargando.cs" id="1_6ufp2"]
 [ext_resource type="Texture2D" uid="uid://c11mcr33xfo5q" path="res://Assets/Fondos/david-edwards-kenden-001.jpg" id="2_6ufp2"]
+[ext_resource type="PackedScene" uid="uid://b61g3k35phaec" path="res://Escenas/register.tscn" id="2_a5wvn"]
+[ext_resource type="PackedScene" uid="uid://vmr2hn3sdfag" path="res://main_menu.tscn" id="3_k2uci"]
 [ext_resource type="FontFile" uid="uid://ckukl3m3uu83o" path="res://Assets/Fonts/JetBrainsMono-Regular.ttf" id="5_o2blc"]
 [ext_resource type="Shader" uid="uid://crfl2uk7m31y5" path="res://Assets/Shaders/loading_screen.gdshader" id="5_oxjdn"]
 [ext_resource type="FontFile" uid="uid://cbh3j85ttick4" path="res://Assets/Fonts/Cinzel-ExtraBold.ttf" id="6_x73jc"]
@@ -17,7 +19,7 @@ bg_color = Color(0, 0, 0, 0.41960785)
 corner_radius_top_left = 50
 corner_radius_bottom_left = 50
 
-[node name="PantallaCarga" type="CanvasLayer" unique_id=1822784241 node_paths=PackedStringArray("_root", "_statusLabel", "_spinnerIcon", "_tipLabel", "_errorPopup", "_errorLabel", "_btnReintentar", "_btnCancelar", "_serverInfo")]
+[node name="PantallaCarga" type="CanvasLayer" unique_id=1822784241 node_paths=PackedStringArray("_root", "_statusLabel", "_spinnerIcon", "_tipLabel", "_errorPopup", "_errorLabel", "_btnReintentar", "_btnCancelar", "_serverInfo", "_progressBar")]
 layer = 10
 script = ExtResource("1_6ufp2")
 _root = NodePath("LoadingScreen")
@@ -29,6 +31,9 @@ _errorLabel = NodePath("LoadingScreen/ErrorPopup/VBoxContainer/ErrorLabel")
 _btnReintentar = NodePath("LoadingScreen/ErrorPopup/VBoxContainer/HBoxContainer/BtnReintentar")
 _btnCancelar = NodePath("LoadingScreen/ErrorPopup/VBoxContainer/HBoxContainer/BtnCancelar")
 _serverInfo = NodePath("LoadingScreen/ServerInfoChip/ServerInfoLabel")
+_progressBar = NodePath("LoadingScreen/ProgressBar")
+_loginScene = ExtResource("2_a5wvn")
+_mainScene = ExtResource("3_k2uci")
 
 [node name="LoadingScreen" type="Control" parent="." unique_id=147223628]
 layout_mode = 3

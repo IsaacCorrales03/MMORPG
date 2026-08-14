@@ -13,13 +13,15 @@ namespace Server.Red
             { TipoPaquete.PeticionRegistro, typeof(PaquetePeticionRegistro) },
             { TipoPaquete.RespuestaRegistro, typeof(PaqueteRespuestaRegistro)},
             { TipoPaquete.PeticionReanudarSesion, typeof(PaquetePeticionReanudarSesion)},
-            { TipoPaquete.RespuestaReanudarSesion, typeof(PaqueteRespuestaReanudarSesion) }
+            { TipoPaquete.RespuestaReanudarSesion, typeof(PaqueteRespuestaReanudarSesion) },
+            
 
         };
         public static readonly Dictionary<TipoPaquete, IPacketHandler> PacketHandlers = new()
         {
             {TipoPaquete.PeticionInicioSesion, new LoginHandler()},
-            {TipoPaquete.PeticionRegistro, new RegisterHandler()}
+            {TipoPaquete.PeticionRegistro, new RegisterHandler()},
+            {TipoPaquete.PeticionReanudarSesion, new ResumeSessionHandler()}
         };
 
         public static async Task Enrutar(TipoPaquete tipo, byte[] contenido, NetPeer peer)

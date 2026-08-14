@@ -1,4 +1,6 @@
 using Godot;
+using Shared.Paquetes;
+using Shared.Utils;
 
 namespace Client.Juego
 {
@@ -18,10 +20,20 @@ namespace Client.Juego
         [Signal] public delegate void SesionReanudadaFallidaEventHandler(string mensaje);
         
         [Signal] public delegate void InicioSesionExitosoEventHandler();
-        [Signal] public delegate void InicioSesionFallidoEventHandler();
+        [Signal] public delegate void InicioSesionFallidoEventHandler(string mensaje);
         
         public string TokenSesion;
 
         public override void _Ready() => Instance = this;
+
+        public void IniciarJuego()
+        {
+            PaquetePeticionAparecerJugador peticion = new()
+            {
+                JugadorId = GameState.IdUsuario ?? 0,
+                position = new Shared.Tipos.Vector2()
+            };
+            PacketSender.EnviarTCP(Cliente.Instancia.Peer, peticion);
+        }
     }
 }

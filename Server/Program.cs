@@ -31,8 +31,7 @@ consola.Start();
 while (servidor.Running)
 {
     servidor.Update();
-
-    Thread.Sleep(1); // Evita consumir el 100% de la CPU
+    Thread.Sleep(1);
 }
 
 consola.Join();

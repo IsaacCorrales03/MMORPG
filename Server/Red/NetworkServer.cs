@@ -115,8 +115,8 @@ namespace Server.Red
             {
                 TipoPaquete tipo = (TipoPaquete)reader.GetByte();
                 byte[] contenido = reader.GetBytesWithLength();
+                Console.WriteLine($">> Paquete {tipo} recibido desde {peer}");
                 await PacketRouter.Enrutar(tipo, contenido, peer);
-
             }
             catch (Exception ex)
             {

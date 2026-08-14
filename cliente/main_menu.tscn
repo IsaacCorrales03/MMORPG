@@ -1,18 +1,8 @@
 [gd_scene format=3 uid="uid://vmr2hn3sdfag"]
 
 [ext_resource type="Script" uid="uid://c3g7jn27txmh3" path="res://Game/MainMenu.cs" id="1_06t4h"]
+[ext_resource type="PackedScene" uid="uid://dvv7gw18ogwib" path="res://Escenas/player.tscn" id="2_7vrkn"]
 
 [node name="MainMenu" type="Node2D" unique_id=778894607]
 script = ExtResource("1_06t4h")
-
-[node name="IdUsuario" type="Label" parent="." unique_id=911020991]
-offset_right = 40.0
-offset_bottom = 23.0
-theme_override_font_sizes/font_size = 120
-
-[node name="Usuario" type="Label" parent="." unique_id=1611487072]
-offset_left = 2.0
-offset_top = 187.0
-offset_right = 42.0
-offset_bottom = 210.0
-theme_override_font_sizes/font_size = 120
+playerEscene = ExtResource("2_7vrkn")

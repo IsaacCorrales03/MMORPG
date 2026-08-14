@@ -38,6 +38,7 @@ namespace Server.Handlers
 
             respuesta.Exitoso = true;
             respuesta.Token = sesion.Token;
+            respuesta.Username = jugador.NombreUsuario;
 
             PacketSender.EnviarTCP(peer, respuesta);
         }

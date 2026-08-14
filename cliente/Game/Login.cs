@@ -6,170 +6,81 @@ using Godot;
 using Shared.Paquetes;
 using Shared.Utils;
 
-public partial class EstiloLoginPanel : Control
+public partial class Login : Control
 {
 	// --- Paleta ---
-	private static readonly Color FondoGeneral = new Color("#12100E");
-	private static readonly Color FondoPanel = new Color("#1B1611");
+
 	private static readonly Color AcentoAmbar = new Color("#C97A3D");
-	private static readonly Color DoradoApagado = new Color("#8A6A3B");
 	private static readonly Color TextoPrincipal = new Color("#EDE4D3");
-	private static readonly Color TextoSecundario = new Color("#8C8478");
 
 	private Button boton;
-	private ColorRect fondo; 
+	private ColorRect fondo;
 	private Panel panel;
 	private Label titulo;
 	private Label etiquetaUsuario;
-	private Label etiquetaClave; 
+	private Label etiquetaClave;
 	private LineEdit userInput;
 	private LineEdit passwordInput;
-	private LineEdit emailInput;
 
 	// --- Overlay de resultado (éxito / fallo) ---
 	private Control overlayResultado;
 	private Label labelResultado;
 	private Button botonReintentar;
+	[Export] private Label _errorLabel;
+	private const string RutaRegistrar = "res://Escenas/register.tscn";
+
+	[Export] private PackedScene _escenaMain;
+	[Export] private Button _buttonRegistrar;
 
 	public override void _Ready()
 	{
 		boton = GetNode<Button>("PanelLogin/MarginContainer/VBoxContainer/BotonIniciar");
 		fondo = GetNodeOrNull<ColorRect>("Fondo");
-	 	panel = GetNode<Panel>("PanelLogin");
+		panel = GetNode<Panel>("PanelLogin");
 		titulo = GetNode<Label>("PanelLogin/MarginContainer/VBoxContainer/titulo");
 		etiquetaUsuario = GetNode<Label>("PanelLogin/MarginContainer/VBoxContainer/User");
 		etiquetaClave = GetNode<Label>("PanelLogin/MarginContainer/VBoxContainer/Password");
 		userInput = GetNode<LineEdit>("PanelLogin/MarginContainer/VBoxContainer/UserInput");
 		passwordInput = GetNode<LineEdit>("PanelLogin/MarginContainer/VBoxContainer/PasswordInput");
-		emailInput = GetNode<LineEdit>("PanelLogin/MarginContainer/VBoxContainer/EmailInput");
 		boton.Pressed += alPresionarBoton;
-		GameState.Instance.RegistroExitoso += OnRegistroExitoso;
-		GameState.Instance.RegistroFallido += OnRegistroFallido;
-		AplicarFondoGeneral();
-		AplicarEstiloPanel();
-		AplicarEstiloTitulo();
-		AplicarEstiloLabels();
-		AplicarEstiloCampos();
-		AplicarEstiloBoton();
+		GameState.Instance.InicioSesionExitoso += OnInicicioSesionExitoso;
+		GameState.Instance.InicioSesionFallido += OnInicicioSesionFallido;
+		_buttonRegistrar.Pressed += alPresionarRegistrar;
 		AgregarEsquinasOrnamentales();
 		CrearOverlayResultado();
 	}
-
-	private void OnRegistroExitoso()
+	private void OnInicicioSesionExitoso()
 	{
-		MostrarResultado(true, "REGISTRADO EXITOSAMENTE");
+		GameState.Instance.IniciarJuego();
+	}
+	private void alPresionarRegistrar()
+	{
+		GetTree().ChangeSceneToFile(RutaRegistrar);
 	}
 
-	private void OnRegistroFallido(string mensaje)
+	public override void _ExitTree()
 	{
-		MostrarResultado(false, "REGISTRO FALLIDO");
+		GameState.Instance.InicioSesionExitoso -= OnInicicioSesionExitoso;
+		GameState.Instance.InicioSesionFallido -= OnInicicioSesionFallido;
+	}
+	private void OnInicicioSesionFallido(string mensaje)
+	{
+		_errorLabel.Text = mensaje;
 	}
 
 	private void alPresionarBoton()
 	{
 		string usuario = userInput.Text;
 		string clave = passwordInput.Text;
-		string email = emailInput.Text;
-		PaquetePeticionRegistro paquete = new();
-		paquete.Usuario = usuario;
-		paquete.Clave = clave;
-		paquete.Email = email;
-		PacketSender.EnviarTCP(Conexion.Instance.Peer, paquete);
-	}
-
-	private void AplicarFondoGeneral()
-	{
-		if (fondo != null)
-			fondo.Color = FondoGeneral;
-	}
-
-	private void AplicarEstiloPanel()
-	{
-		var estilo = new StyleBoxFlat();
-		estilo.BgColor = FondoPanel;
-		estilo.SetCornerRadiusAll(4); // casi recto, look de sello grabado, no "app moderna"
-		estilo.SetBorderWidthAll(1);
-		estilo.BorderColor = DoradoApagado;
-		estilo.ShadowSize = 24;
-		estilo.ShadowColor = new Color(0, 0, 0, 0.45f);
-
-		panel.AddThemeStyleboxOverride("panel", estilo);
-	}
-
-	private void AplicarEstiloTitulo()
-	{
-		titulo.Text = "I N I C I A R   S E S I Ó N"; // tracking manual vía espaciado
-		titulo.AddThemeColorOverride("font_color", TextoPrincipal);
-		titulo.AddThemeFontSizeOverride("font_size", 30);
-		titulo.HorizontalAlignment = HorizontalAlignment.Center;
-	}
-
-	private void AplicarEstiloLabels()
-	{
-		foreach (var nombre in new[] { "User", "Password" })
+		PaquetePeticionInicioSesion paquete = new()
 		{
-			var label = GetNode<Label>($"PanelLogin/MarginContainer/VBoxContainer/{nombre}");
-			label.AddThemeColorOverride("font_color", TextoSecundario);
-			label.AddThemeFontSizeOverride("font_size", 15);
-		}
-
-		// Ajustamos el texto para que se sientan como inscripciones, no placeholders de formulario
-		etiquetaUsuario.Text = "USUARIO";
-		etiquetaClave.Text = "CONTRASEÑA";
+			Usuario = usuario,
+			Clave = clave,
+		};
+		PacketSender.EnviarTCP(Cliente.Instancia.Peer, paquete);
 	}
 
-	private void AplicarEstiloCampos()
-	{
-		foreach (var nombre in new[] { "UserInput", "PasswordInput" })
-		{
-			var campo = GetNode<LineEdit>($"PanelLogin/MarginContainer/VBoxContainer/{nombre}");
 
-			// Estado normal: solo línea inferior, sin caja rellena
-			var estiloNormal = new StyleBoxFlat();
-			estiloNormal.BgColor = new Color(0, 0, 0, 0); // transparente
-			estiloNormal.BorderWidthBottom = 1;
-			estiloNormal.BorderColor = DoradoApagado;
-			estiloNormal.ContentMarginBottom = 10;
-			estiloNormal.ContentMarginTop = 6;
-
-			// Estado con foco: línea inferior en color ámbar, más gruesa
-			var estiloFoco = (StyleBoxFlat)estiloNormal.Duplicate();
-			estiloFoco.BorderWidthBottom = 2;
-			estiloFoco.BorderColor = AcentoAmbar;
-
-			campo.AddThemeStyleboxOverride("normal", estiloNormal);
-			campo.AddThemeStyleboxOverride("focus", estiloFoco);
-			campo.AddThemeColorOverride("font_color", TextoPrincipal);
-			campo.AddThemeColorOverride("caret_color", AcentoAmbar);
-			campo.AddThemeFontSizeOverride("font_size", 17);
-			campo.CustomMinimumSize = new Vector2(0, 53);
-		}
-	}
-
-	private void AplicarEstiloBoton()
-	{
-		boton.Text = "E N T R A R";
-		boton.CustomMinimumSize = new Vector2(0, 60);
-
-		var estiloNormal = new StyleBoxFlat();
-		estiloNormal.BgColor = new Color(0, 0, 0, 0);
-		estiloNormal.SetBorderWidthAll(1);
-		estiloNormal.BorderColor = AcentoAmbar;
-		estiloNormal.SetCornerRadiusAll(2);
-
-		var estiloHover = (StyleBoxFlat)estiloNormal.Duplicate();
-		estiloHover.BgColor = new Color(AcentoAmbar, 0.12f);
-
-		var estiloPressed = (StyleBoxFlat)estiloNormal.Duplicate();
-		estiloPressed.BgColor = new Color(AcentoAmbar, 0.25f);
-
-		boton.AddThemeStyleboxOverride("normal", estiloNormal);
-		boton.AddThemeStyleboxOverride("hover", estiloHover);
-		boton.AddThemeStyleboxOverride("pressed", estiloPressed);
-		boton.AddThemeColorOverride("font_color", AcentoAmbar);
-		boton.AddThemeColorOverride("font_hover_color", TextoPrincipal);
-		boton.AddThemeFontSizeOverride("font_size", 18);
-	}
 
 	// --- El elemento "firma" del diseño: esquinas ornamentales tipo sello ---
 	private void AgregarEsquinasOrnamentales()
@@ -193,7 +104,6 @@ public partial class EstiloLoginPanel : Control
 		AddChild(overlayResultado);
 
 		var fondoOverlay = new ColorRect();
-		fondoOverlay.Color = FondoGeneral;
 		fondoOverlay.SetAnchorsPreset(LayoutPreset.FullRect);
 		overlayResultado.AddChild(fondoOverlay);
 
@@ -261,7 +171,6 @@ public partial class EstiloLoginPanel : Control
 
 		userInput.Text = "";
 		passwordInput.Text = "";
-		emailInput.Text = "";
 	}
 }
 

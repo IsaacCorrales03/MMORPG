@@ -43,6 +43,8 @@ public partial class Cliente : Node
 	{
 		Instancia = this;
 		IniciarTimeoutDeConexion();
+		GameState.Instance.SesionReanudadaFallida += OnSesionReanudadaFallida;
+		GameState.Instance.SesionReanudadaExitosa += OnSesionReanudadaExitosa;
 		
 	}
 	public EstadoConexion get_status()
@@ -67,7 +69,7 @@ public partial class Cliente : Node
 	private void CambiarEstadoAutenticacion(EstadoAutenticacion estado)
 	{
 		estadoAutenticacion = estado;
-		GD.Print($"Estado: {estadoAutenticacion}");
+		GD.Print($"Estado sesion: {estadoAutenticacion}");
 		OnEstadoAutenticacionCambiado?.Invoke(estado);
 	}
 
@@ -75,8 +77,7 @@ public partial class Cliente : Node
 	{
 		if (GameState.Conectado || estadoConexion == EstadoConexion.Conectado)
 			return;
-		Token = TokenManager.LeerTokenGuardado();
-
+		
 		CambiarEstadoConexion(EstadoConexion.Conectando);
 		IniciarTimeoutDeConexion();
 		_listener = new();
@@ -92,12 +93,20 @@ public partial class Cliente : Node
 			return;
 		}
 		_server.Connect(IP_Servidor, Puerto, Claves.ClaveServidor);
+		
+	}
+	private void OnSesionReanudadaFallida(string mensaje)
+	{
+		CambiarEstadoAutenticacion(EstadoAutenticacion.NoAutenticado);
+	}
+	private void OnSesionReanudadaExitosa()
+	{
+		CambiarEstadoAutenticacion(EstadoAutenticacion.Autenticado);
 	}
 	public void OnNetworkReceive(NetPeer peer, NetPacketReader dataReader, byte channel, DeliveryMethod deliveryMethod)
 	{
 		try
 		{
-			GD.Print($"Bytes recibidos: {dataReader.AvailableBytes}");
 			TipoPaquete tipo = (TipoPaquete)dataReader.GetByte();
 			byte[] contenido = dataReader.GetBytesWithLength();
 			Router.Enrutar(tipo, contenido, peer);
@@ -118,9 +127,10 @@ public partial class Cliente : Node
 		GameState.Conectado = true;
 		Peer = conexion;
 		DetenerTimeout();
+		Token = TokenManager.LeerTokenGuardado();
 		if (!string.IsNullOrEmpty(Token))
 		{
-			GD.Print($"Token leído del archivo: {Token}");
+			CambiarEstadoAutenticacion(EstadoAutenticacion.Autenticando);
 
 			PaquetePeticionReanudarSesion paquete = new();
 			paquete.Token = Token;
@@ -130,7 +140,6 @@ public partial class Cliente : Node
 		else
 		{
 			CambiarEstadoAutenticacion(EstadoAutenticacion.NoAutenticado);
-			GD.Print("No se pudo autenticar, no hay token");
 		}
 	}
 

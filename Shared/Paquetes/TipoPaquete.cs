@@ -5,9 +5,11 @@ namespace Shared.Paquetes
         PeticionInicioSesion,
         RespuestaInicioSesion,
         AparecerJugador,
+        PeticionAparecerJugador,
         PeticionRegistro,
         RespuestaRegistro,
         PeticionReanudarSesion,
-        RespuestaReanudarSesion
+        RespuestaReanudarSesion,
+        Movimiento
     }
 }

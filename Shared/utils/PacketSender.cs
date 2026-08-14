@@ -14,6 +14,7 @@ namespace Shared.Utils
             {
                 return;
             }
+            Console.WriteLine($">>>Enviando {paquete.Tipo}");
             // Serializar el paquete
             byte[] contenido = MessagePackSerializer.Serialize(paquete.GetType(), paquete);
             NetDataWriter writer = new();

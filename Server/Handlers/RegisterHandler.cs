@@ -42,7 +42,6 @@ namespace Server.Handlers
 
             respuesta.Exitoso = true;
             respuesta.Token = sesion.Token;
-            Console.WriteLine($"{respuesta.Exitoso}: {respuesta.Token}: {respuesta.MensajeError}");
             PacketSender.EnviarTCP(peer, respuesta);
         }
     }

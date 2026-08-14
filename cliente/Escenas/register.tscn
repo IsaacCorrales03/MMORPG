@@ -1,0 +1,142 @@
+[gd_scene format=3 uid="uid://b61g3k35phaec"]
+
+[ext_resource type="Script" uid="uid://cmgioge7ulfsi" path="res://Game/Register.cs" id="1_reg01"]
+[ext_resource type="Theme" uid="uid://b4tlea45tncdb" path="res://Styles/estilos.tres" id="2_csu3p"]
+[ext_resource type="PackedScene" uid="uid://vmr2hn3sdfag" path="res://main_menu.tscn" id="2_kufqg"]
+[ext_resource type="FontFile" uid="uid://cbh3j85ttick4" path="res://Assets/Fonts/Cinzel-ExtraBold.ttf" id="3_wf0pg"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_uuo5d"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wf0pg"]
+bg_color = Color(0, 0, 0, 0)
+
+[sub_resource type="Theme" id="Theme_csu3p"]
+Button/font_sizes/font_size = 24
+Button/fonts/font = ExtResource("3_wf0pg")
+Button/styles/focus = SubResource("StyleBoxFlat_uuo5d")
+Button/styles/hover = SubResource("StyleBoxFlat_wf0pg")
+Button/styles/normal = SubResource("StyleBoxFlat_wf0pg")
+Button/styles/pressed = SubResource("StyleBoxFlat_wf0pg")
+
+[node name="Register" type="Control" unique_id=2131476016 node_paths=PackedStringArray("_botonRegistrar", "_panel", "_userInput", "_passwordInput", "_emailInput", "_errorLabel", "_buttonLogin")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_reg01")
+_botonRegistrar = NodePath("PanelRegister/MarginContainer/VBoxContainer/BotonRegistrar")
+_panel = NodePath("PanelRegister")
+_userInput = NodePath("PanelRegister/MarginContainer/VBoxContainer/UserInput")
+_passwordInput = NodePath("PanelRegister/MarginContainer/VBoxContainer/PasswordInput")
+_emailInput = NodePath("PanelRegister/MarginContainer/VBoxContainer/EmailInput")
+_errorLabel = NodePath("PanelRegister/MarginContainer/VBoxContainer/Error")
+_buttonLogin = NodePath("PanelRegister/MarginContainer/VBoxContainer/Button")
+_escenaMain = ExtResource("2_kufqg")
+
+[node name="Fondo" type="ColorRect" parent="." unique_id=1217980011]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.07058824, 0.0627451, 0.05490196, 1)
+
+[node name="PanelRegister" type="Panel" parent="." unique_id=649744889]
+propagate_maximum_size = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -525.0
+offset_top = -500.0
+offset_right = 525.0
+offset_bottom = 500.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme = ExtResource("2_csu3p")
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelRegister" unique_id=922421696]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_bottom = 30
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelRegister/MarginContainer" unique_id=427488424]
+layout_mode = 2
+theme_override_constants/separation = 40
+
+[node name="titulo" type="Label" parent="PanelRegister/MarginContainer/VBoxContainer" unique_id=1356884684]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 50
+text = "C R E A R  C U E N T A"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Error" type="Label" parent="PanelRegister/MarginContainer/VBoxContainer" unique_id=2039884972]
+layout_mode = 2
+theme = ExtResource("2_csu3p")
+theme_override_colors/font_color = Color(0.7882353, 0.47843137, 0.23921569, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="User" type="Label" parent="PanelRegister/MarginContainer/VBoxContainer" unique_id=1896778861]
+layout_mode = 2
+theme = ExtResource("2_csu3p")
+text = "Usuario"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="UserInput" type="LineEdit" parent="PanelRegister/MarginContainer/VBoxContainer" unique_id=367276149]
+layout_mode = 2
+theme = ExtResource("2_csu3p")
+
+[node name="Email" type="Label" parent="PanelRegister/MarginContainer/VBoxContainer" unique_id=1896778862]
+layout_mode = 2
+theme = ExtResource("2_csu3p")
+text = "Correo"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="EmailInput" type="LineEdit" parent="PanelRegister/MarginContainer/VBoxContainer" unique_id=367276150]
+layout_mode = 2
+theme = ExtResource("2_csu3p")
+
+[node name="Password" type="Label" parent="PanelRegister/MarginContainer/VBoxContainer" unique_id=309697439]
+layout_mode = 2
+theme = ExtResource("2_csu3p")
+text = "Contraseña"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PasswordInput" type="LineEdit" parent="PanelRegister/MarginContainer/VBoxContainer" unique_id=414847136]
+layout_mode = 2
+theme = ExtResource("2_csu3p")
+
+[node name="BotonRegistrar" type="Button" parent="PanelRegister/MarginContainer/VBoxContainer" unique_id=1687783773]
+layout_mode = 2
+offset_transform_enabled = true
+theme = ExtResource("2_csu3p")
+text = "Registrarse"
+
+[node name="Button" type="Button" parent="PanelRegister/MarginContainer/VBoxContainer" unique_id=1534111529]
+layout_mode = 2
+theme = SubResource("Theme_csu3p")
+theme_override_colors/font_color = Color(0.7882353, 0.47843137, 0.23921569, 1)
+theme_override_colors/font_focus_color = Color(0.7882353, 0.47843137, 0.23921569, 1)
+theme_override_colors/font_pressed_color = Color(0.7882353, 0.47843137, 0.23921569, 1)
+theme_override_colors/font_hover_color = Color(4.1169996, 2.5350885, 1.5651262, 1)
+text = "Ya tienes una cuenta?"

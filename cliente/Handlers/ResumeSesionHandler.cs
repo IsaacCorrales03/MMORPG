@@ -10,9 +10,7 @@ namespace Client.Handlers
 	{
 		public static void Manejar(PaqueteRespuestaReanudarSesion paquete)
 		{
-			GD.Print("Se llamó");
 			if (paquete.Exitoso) {
-				GD.Print("emitio");
 				GameState.IdUsuario = paquete.IdUsuario;
 				GameState.NombreUsuario = paquete.NombreUsuario;
 				TokenManager.GuardarToken(paquete.Token);
@@ -21,7 +19,7 @@ namespace Client.Handlers
 			}
 			else
 			{
-				GD.Print("no emitio");
+				GD.Print($"no emitio: {paquete.MensajeError}");
 				GameState.Instance.EmitSignal(GameState.SignalName.SesionReanudadaFallida, paquete.MensajeError ?? "Error desconocido al reanudar sesion");
 			}
 		}

@@ -1,8 +1,13 @@
+using MessagePack;
+
 namespace Shared.Tipos
 {
+    [MessagePackObject]
     public struct Vector2
     {
+        [Key(0)]
         public float X { get; set; }
+        [Key(1)]
         public float Y { get; set; }
         
         public Vector2(float x = 0, float y = 0)

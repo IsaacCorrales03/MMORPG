@@ -5,11 +5,14 @@ using System;
 public partial class MainMenu : Node
 {
 	public Label usuario;
-	// Called when the node enters the scene tree for the first time.
+	[Export] public PackedScene playerEscene;
+
 	public override void _Ready()
 	{
-		usuario = GetNode<Label>("Usuario");
-		usuario.Text = GameState.NombreUsuario;
+		CharacterBody2D player = playerEscene.Instantiate<CharacterBody2D>();
+		AddChild(player);
+		player.GetNode<Label>("Etiqueta/Nombre").Text = GameState.NombreUsuario;
+		player.GetNode<Label>("Etiqueta/Nombre").GlobalPosition = player.GetNode<Label>("Etiqueta/Nombre").GlobalPosition.Round();
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.

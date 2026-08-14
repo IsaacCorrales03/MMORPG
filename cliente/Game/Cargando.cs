@@ -1,5 +1,10 @@
+using System.Runtime.CompilerServices;
+using Client.Juego;
 using Godot;
 using LiteNetLib;
+using Shared.Paquetes;
+using Shared.Tipos;
+using Shared.Utils;
 
 public partial class Cargando : CanvasLayer
 {
@@ -13,7 +18,8 @@ public partial class Cargando : CanvasLayer
 	[Export] private Button _btnCancelar;
 	[Export] private Label _serverInfo;
 	[Export] private ProgressBar _progressBar;
-	
+	[Export] private PackedScene _loginScene;
+	[Export] private PackedScene _mainScene;
 	private Tween _spinnerTween;
 	private Timer _tipTimer;
 	private Timer _pingTimer;
@@ -32,13 +38,15 @@ public partial class Cargando : CanvasLayer
 
 		_errorPopup.Visible = false;
 		_btnReintentar.Pressed += Reintentar;
-		_btnCancelar.Pressed += () => CambiarEscena("res://Escenas/Login.tscn");
+
 		
 		FadeIn();
 		StartTipRotation();
 
 		IniciarActualizacionPing();
+		
 		Cliente.Instancia.OnEstadoConexionCambiado += ManejarCambioDeEstadoConexion;
+		Cliente.Instancia.OnEstadoAutenticacionCambiado += ManejarCambioDeEstadoAutenticacion;
 		Cliente.Instancia.Conectar();
 	}
 
@@ -46,7 +54,7 @@ public partial class Cargando : CanvasLayer
 
 	public override void _ExitTree()
 	{
-		if (Conexion.Instance != null)
+		if (Cliente.Instancia != null)
 			Cliente.Instancia.OnEstadoConexionCambiado -= ManejarCambioDeEstadoConexion;
 		if (_tipTimer != null)
 			_tipTimer.Timeout -= RotarTip;
@@ -89,8 +97,6 @@ public partial class Cargando : CanvasLayer
 	{
 		if (Cliente.Instancia.Peer == null || Cliente.Instancia.Peer.ConnectionState != ConnectionState.Connected)
 			return;
-
-		GD.Print($"Ping: {Cliente.Instancia.Peer.Ping} ms");
 		_serverInfo.Text = $"Ping: {Cliente.Instancia.Peer.Ping} ms";
 	}
 	private void RotarTip()
@@ -102,6 +108,8 @@ public partial class Cargando : CanvasLayer
 		tween.TweenProperty(_tipLabel, "modulate:a", 1f, 0.15f);
 	}
 
+
+	
 	private void ManejarCambioDeEstadoConexion(Cliente.EstadoConexion estado)
 	{
 		switch (estado)
@@ -125,7 +133,7 @@ public partial class Cargando : CanvasLayer
 		}
 	}
 
-	private void ManejarCambioDeEstadoAutenticacion(Cliente.EstadoAutenticacion estado)
+	private async void ManejarCambioDeEstadoAutenticacion(Cliente.EstadoAutenticacion estado)
 	{
 		switch (estado)
 		{
@@ -134,14 +142,18 @@ public partial class Cargando : CanvasLayer
 				break;
 			case Cliente.EstadoAutenticacion.NoAutenticado:
 				_statusLabel.Text = "No se pudo autenticar";
+				await ToSignal(GetTree().CreateTimer(2.0), SceneTreeTimer.SignalName.Timeout);
+				CambiarEscena(_loginScene);
 				break;
 			case Cliente.EstadoAutenticacion.Autenticado:
 				_statusLabel.Text = "Sesion autenticada";
+				GameState.Instance.IniciarJuego();
 				break;
 			default:
 				break;
 		}
 	}
+
 
 	private void MostrarError(string mensaje)
 	{
@@ -155,17 +167,16 @@ public partial class Cargando : CanvasLayer
 	private void Reintentar()
 	{
 		_errorPopup.Visible = false;
-		_spinnerTween.Play();
 		_statusLabel.Text = "Conectando al servidor...";
-		Conexion.Instance.Connect();
+		Cliente.Instancia.Conectar();
 	}
 
-	private void CambiarEscena(string ruta)
+	private void CambiarEscena(PackedScene packed)
 	{
 		var tween = CreateTween();
 		tween.TweenProperty(_root, "modulate:a", 0f, 0.4f)
 			 .SetEase(Tween.EaseType.In);
 		tween.TweenCallback(Callable.From(() =>
-			GetTree().ChangeSceneToFile(ruta)));
+			GetTree().ChangeSceneToPacked(packed)));
 	}
 }

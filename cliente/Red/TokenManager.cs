@@ -14,7 +14,6 @@ namespace Client.Red
         );
         public static void GuardarToken(string token)
         {
-            GD.Print(token);
             string ruta = ProjectSettings.GlobalizePath(RutaArchivoSesion);
 
             using Aes aes = Aes.Create();
@@ -32,7 +31,6 @@ namespace Client.Red
         public static string LeerTokenGuardado()
         {
             string ruta = ProjectSettings.GlobalizePath(RutaArchivoSesion);
-
             if (!System.IO.File.Exists(ruta))
             {
                 GD.Print("No hay archivo de sesión guardado.");

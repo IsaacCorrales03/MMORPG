@@ -1,18 +1,34 @@
 [gd_scene format=3 uid="uid://clyrhp0l0msj7"]
 
-[ext_resource type="Script" uid="uid://4cgollo2wm51" path="res://Styles/EstiloLoginPanel.cs" id="1_wtcfe"]
+[ext_resource type="Script" uid="uid://b32btmxpnjtxg" path="res://Game/Login.cs" id="1_wf0pg"]
+[ext_resource type="Theme" uid="uid://b4tlea45tncdb" path="res://Styles/estilos.tres" id="2_csu3p"]
+[ext_resource type="PackedScene" uid="uid://vmr2hn3sdfag" path="res://main_menu.tscn" id="3_uxlki"]
+[ext_resource type="FontFile" uid="uid://cbh3j85ttick4" path="res://Assets/Fonts/Cinzel-ExtraBold.ttf" id="3_wf0pg"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_te065"]
-bg_color = Color(0.0022744744, 0, 0.06657717, 1)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_uuo5d"]
 
-[node name="LoginPanel" type="Control" unique_id=2131476015]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wf0pg"]
+bg_color = Color(0, 0, 0, 0)
+
+[sub_resource type="Theme" id="Theme_csu3p"]
+Button/font_sizes/font_size = 24
+Button/fonts/font = ExtResource("3_wf0pg")
+Button/styles/focus = SubResource("StyleBoxFlat_uuo5d")
+Button/styles/hover = SubResource("StyleBoxFlat_wf0pg")
+Button/styles/normal = SubResource("StyleBoxFlat_wf0pg")
+Button/styles/pressed = SubResource("StyleBoxFlat_wf0pg")
+
+[node name="Login" type="Control" unique_id=2131476015 node_paths=PackedStringArray("_errorLabel", "_buttonRegistrar")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_wtcfe")
+script = ExtResource("1_wf0pg")
+_errorLabel = NodePath("PanelLogin/MarginContainer/VBoxContainer/Error")
+_escenaMain = ExtResource("3_uxlki")
+_buttonRegistrar = NodePath("PanelLogin/MarginContainer/VBoxContainer/Button")
 
 [node name="Fondo" type="ColorRect" parent="." unique_id=1217980010]
 layout_mode = 1
@@ -21,7 +37,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.0022967462, 0.002296746, 0.0022967458, 1)
+color = Color(0.07058824, 0.0627451, 0.05490196, 1)
 
 [node name="PanelLogin" type="Panel" parent="." unique_id=649744888]
 propagate_maximum_size = true
@@ -31,15 +47,15 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -262.5
-offset_top = -300.0
-offset_right = 262.5
-offset_bottom = 300.0
+offset_left = -525.0
+offset_top = -500.0
+offset_right = 525.0
+offset_bottom = 500.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
-theme_override_styles/panel = SubResource("StyleBoxFlat_te065")
+theme = ExtResource("2_csu3p")
 
 [node name="MarginContainer" type="MarginContainer" parent="PanelLogin" unique_id=922421695]
 layout_mode = 1
@@ -55,60 +71,58 @@ theme_override_constants/margin_bottom = 30
 
 [node name="VBoxContainer" type="VBoxContainer" parent="PanelLogin/MarginContainer" unique_id=427488423]
 layout_mode = 2
-theme_override_constants/separation = 20
+theme_override_constants/separation = 70
 
 [node name="titulo" type="Label" parent="PanelLogin/MarginContainer/VBoxContainer" unique_id=1356884683]
 layout_mode = 2
-theme_override_font_sizes/font_size = 32
-text = "Iniciar Sesión"
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 50
+text = "I N I C I A R  S E S I O N"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="HSeparator" type="HSeparator" parent="PanelLogin/MarginContainer/VBoxContainer" unique_id=490337840]
+[node name="Error" type="Label" parent="PanelLogin/MarginContainer/VBoxContainer" unique_id=2039884971]
 layout_mode = 2
-theme_override_constants/separation = 3
+theme = ExtResource("2_csu3p")
+theme_override_colors/font_color = Color(0.7882353, 0.47843137, 0.23921569, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="User" type="Label" parent="PanelLogin/MarginContainer/VBoxContainer" unique_id=1896778860]
 layout_mode = 2
-theme_override_font_sizes/font_size = 19
+theme = ExtResource("2_csu3p")
 text = "Usuario"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="UserInput" type="LineEdit" parent="PanelLogin/MarginContainer/VBoxContainer" unique_id=367276148]
 layout_mode = 2
+theme = ExtResource("2_csu3p")
 
 [node name="Password" type="Label" parent="PanelLogin/MarginContainer/VBoxContainer" unique_id=309697438]
 layout_mode = 2
-theme_override_font_sizes/font_size = 19
+theme = ExtResource("2_csu3p")
 text = "Contraseña"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="PasswordInput" type="LineEdit" parent="PanelLogin/MarginContainer/VBoxContainer" unique_id=414847135]
 layout_mode = 2
-
-[node name="HSeparator2" type="HSeparator" parent="PanelLogin/MarginContainer/VBoxContainer" unique_id=422171247]
-layout_mode = 2
-theme_override_constants/separation = 3
-
-[node name="Email" type="Label" parent="PanelLogin/MarginContainer/VBoxContainer" unique_id=1449358913]
-layout_mode = 2
-theme_override_font_sizes/font_size = 19
-text = "Email"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="EmailInput" type="LineEdit" parent="PanelLogin/MarginContainer/VBoxContainer" unique_id=1470823348]
-layout_mode = 2
-
-[node name="HSeparator3" type="HSeparator" parent="PanelLogin/MarginContainer/VBoxContainer" unique_id=1414638062]
-layout_mode = 2
-theme_override_constants/separation = 3
+theme = ExtResource("2_csu3p")
 
 [node name="BotonIniciar" type="Button" parent="PanelLogin/MarginContainer/VBoxContainer" unique_id=1687783772]
 layout_mode = 2
 offset_transform_enabled = true
+theme = ExtResource("2_csu3p")
 text = "Entrar"
+
+[node name="Button" type="Button" parent="PanelLogin/MarginContainer/VBoxContainer" unique_id=1534111528]
+layout_mode = 2
+theme = SubResource("Theme_csu3p")
+theme_override_colors/font_color = Color(0.7882353, 0.47843137, 0.23921569, 1)
+theme_override_colors/font_focus_color = Color(0.7882353, 0.47843137, 0.23921569, 1)
+theme_override_colors/font_pressed_color = Color(0.7882353, 0.47843137, 0.23921569, 1)
+theme_override_colors/font_hover_color = Color(4.1169996, 2.5350885, 1.5651262, 1)
+text = "No tengo cuenta"
 
 [connection signal="button_down" from="PanelLogin/MarginContainer/VBoxContainer/BotonIniciar" to="." method="_on_button_button_down"]

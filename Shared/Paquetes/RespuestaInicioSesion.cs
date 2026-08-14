@@ -14,6 +14,8 @@ namespace Shared.Paquetes
 
         [Key(3)]
         public string Token { get; set; } = "";
+        [Key(4)]
+        public string Username {get;set;} = "";
         
         [IgnoreMember]
         public TipoPaquete Tipo => TipoPaquete.RespuestaInicioSesion;
