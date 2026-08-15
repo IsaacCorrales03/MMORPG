@@ -26,9 +26,10 @@ namespace Server.Handlers
 
             if (jugador == null)
             {
-                PacketSender.EnviarTCP(peer, respuesta);
+                PacketSender.EnviarOrdenado(peer, respuesta);
                 return;
             }
+            Console.WriteLine($"Jugador DB ID: {jugador.Id}");
 
             Sesion sesion = SesionManager.CrearSesion(
                 jugador.Id,
@@ -36,11 +37,15 @@ namespace Server.Handlers
                 peer
             );
 
+            Console.WriteLine($"Sesion PlayerID: {sesion.UsuarioId}");
+
+
             respuesta.Exitoso = true;
             respuesta.Token = sesion.Token;
             respuesta.Username = jugador.NombreUsuario;
+            respuesta.IDJugador = jugador.Id;
 
-            PacketSender.EnviarTCP(peer, respuesta);
+            PacketSender.EnviarOrdenado(peer, respuesta);
         }
     }
 }

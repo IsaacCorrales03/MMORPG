@@ -1,10 +1,21 @@
+using Server.Mundo;
 using Server.Red;
 
 public class GameServer
 {
-    private readonly NetworkServer _servidorRed = new(10, 8455);
+    public readonly World _mundo;
+    private readonly NetworkServer _servidorRed;
 
     public bool Running { get; private set; }
+
+    private const double TickRate = 1.0 / 20.0;
+    private double _tickAccumulator;
+
+    public GameServer()
+    {
+        _mundo = new World();
+        _servidorRed = new NetworkServer(10, 8455, _mundo);
+    }
 
     public void Start()
     {
@@ -24,14 +35,20 @@ public class GameServer
         _servidorRed.Stop();
     }
 
-    public void Update()
+    public void Update(double delta)
     {
         if (!Running)
             return;
 
         _servidorRed.PollEvents();
+        _tickAccumulator += delta;
 
-        // World.Update();
-        // Systems.Update();
+        while (_tickAccumulator >= TickRate)
+        {
+            _mundo.Tick();
+
+            _tickAccumulator -= TickRate;
+            
+        }
     }
 }

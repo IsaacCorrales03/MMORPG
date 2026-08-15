@@ -1,6 +1,8 @@
 using LiteNetLib;
 using MessagePack;
 using Server.Handlers;
+using Server.Managers;
+using Server.Mundo;
 using Shared.Paquetes;
 
 namespace Server.Red
@@ -14,17 +16,27 @@ namespace Server.Red
             { TipoPaquete.RespuestaRegistro, typeof(PaqueteRespuestaRegistro)},
             { TipoPaquete.PeticionReanudarSesion, typeof(PaquetePeticionReanudarSesion)},
             { TipoPaquete.RespuestaReanudarSesion, typeof(PaqueteRespuestaReanudarSesion) },
-            
-
+            { TipoPaquete.PeticionAparecerJugador, typeof(PaquetePeticionAparecerJugador)},
+            { TipoPaquete.Movimiento, typeof(PaqueteMovimiento)}
         };
-        public static readonly Dictionary<TipoPaquete, IPacketHandler> PacketHandlers = new()
+
+        private readonly World _world;
+        private readonly Dictionary<TipoPaquete, IPacketHandler> _packetHandlers;
+
+        public PacketRouter(World world)
         {
-            {TipoPaquete.PeticionInicioSesion, new LoginHandler()},
-            {TipoPaquete.PeticionRegistro, new RegisterHandler()},
-            {TipoPaquete.PeticionReanudarSesion, new ResumeSessionHandler()}
-        };
+            _world = world;
+            _packetHandlers = new()
+            {
+                { TipoPaquete.PeticionInicioSesion, new LoginHandler() },
+                { TipoPaquete.PeticionRegistro, new RegisterHandler() },
+                { TipoPaquete.PeticionReanudarSesion, new ResumeSessionHandler() },
+                { TipoPaquete.PeticionAparecerJugador, new AparecerJugadorHandler(_world) }
+            };
+        }
 
-        public static async Task Enrutar(TipoPaquete tipo, byte[] contenido, NetPeer peer)
+
+        public async Task Enrutar(TipoPaquete tipo, byte[] contenido, NetPeer peer)
         {
             if (!TiposDePaquete.TryGetValue(tipo, out Type? clasePaquete))
             {
@@ -49,12 +61,39 @@ namespace Server.Red
                 return;
             }
 
-            if (!PacketHandlers.TryGetValue(tipo, out IPacketHandler? handler))
+            if (!_packetHandlers.TryGetValue(tipo, out IPacketHandler? handler))
             {
-                Console.WriteLine($"No existe un handler registrado para {tipo}.");
+                if (!_world.ManejaEvento(tipo))
+                {
+                    Console.WriteLine(
+                        $"No existe handler ni evento para {tipo}."
+                    );
+                    return;
+                }
+
+                int? jugadorId = SesionManager
+                    .ObtenerPorPeer(peer)?
+                    .UsuarioId;
+
+                if (jugadorId is not int id)
+                {
+                    Console.WriteLine(
+                        $"No se pudo identificar al jugador para {tipo}."
+                    );
+                    return;
+                }
+
+                if (!_world.players.ContainsKey(id))
+                {
+                    Console.WriteLine(
+                        $"El jugador {id} no existe en World."
+                    );
+                    return;
+                }
+
+                _world.AddEvent(paquete, id);
                 return;
             }
-
             await handler.Handle(peer, paquete);
         }
     }

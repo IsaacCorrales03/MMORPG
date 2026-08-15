@@ -1,36 +1,24 @@
-﻿GameServer servidor = new();
+﻿using System.Diagnostics;
 
+GameServer servidor = new();
 servidor.Start();
 
-Thread consola = new(() =>
-{
-    while (servidor.Running)
-    {
-        Console.Write("> ");
-        string? comando = Console.ReadLine();
+Console.Clear();
+Console.CursorVisible = false;
 
-        if (string.IsNullOrWhiteSpace(comando))
-            continue;
-
-        switch (comando.Trim().ToLowerInvariant())
-        {
-            case "stop":
-                servidor.Stop();
-                break;
-
-            default:
-                Console.WriteLine($"Comando desconocido: {comando}");
-                break;
-        }
-    }
-});
-
+Thread consola = new(() => ServerConsole.IniciarLoopConsola(servidor));
 consola.IsBackground = true;
 consola.Start();
 
+Stopwatch reloj = Stopwatch.StartNew();
+double anterior = reloj.Elapsed.TotalSeconds;
+
 while (servidor.Running)
 {
-    servidor.Update();
+    double actual = reloj.Elapsed.TotalSeconds;
+    double delta = actual - anterior;
+    anterior = actual;
+    servidor.Update(delta);
     Thread.Sleep(1);
 }
 

@@ -30,7 +30,7 @@ namespace Server.Handlers
 
             if (jugador == null)
             {
-                PacketSender.EnviarTCP(peer, respuesta);
+                PacketSender.EnviarOrdenado(peer, respuesta);
                 return;
             }
 
@@ -42,7 +42,7 @@ namespace Server.Handlers
 
             respuesta.Exitoso = true;
             respuesta.Token = sesion.Token;
-            PacketSender.EnviarTCP(peer, respuesta);
+            PacketSender.EnviarOrdenado(peer, respuesta);
         }
     }
 }

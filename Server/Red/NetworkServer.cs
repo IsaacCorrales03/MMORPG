@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Text.Json;
 using LiteNetLib;
+using Server.Mundo;
 using Shared.Paquetes;
 using Shared.Utils;
 
@@ -11,18 +12,18 @@ namespace Server.Red
         // Instancias de netlib
         private EventBasedNetListener? _listener;
         private NetManager? _server;
-
         // Instancias del servidor
         public bool Running { get; private set; }
         public int MaximoJugadores { get; }
         public int Puerto { get; }
-
+        private PacketRouter _router; 
         // Dependencias del servidor
         // dependencia de router y packet sender
-        public NetworkServer(int maximoJugadores, int puerto)
+        public NetworkServer(int maximoJugadores, int puerto, World world)
         {
             MaximoJugadores = maximoJugadores;
             Puerto = puerto;
+            _router = new(world);
         }
         public void Start()
         {
@@ -115,8 +116,7 @@ namespace Server.Red
             {
                 TipoPaquete tipo = (TipoPaquete)reader.GetByte();
                 byte[] contenido = reader.GetBytesWithLength();
-                Console.WriteLine($">> Paquete {tipo} recibido desde {peer}");
-                await PacketRouter.Enrutar(tipo, contenido, peer);
+                await _router.Enrutar(tipo, contenido, peer);
             }
             catch (Exception ex)
             {

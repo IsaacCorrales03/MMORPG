@@ -19,7 +19,7 @@ namespace Server.Handlers
             {
                 respuesta.Exitoso = false;
                 respuesta.MensajeError = "Token Vacío";
-                PacketSender.EnviarTCP(peer, respuesta);
+                PacketSender.EnviarOrdenado(peer, respuesta);
                 return;
             }
 
@@ -29,14 +29,14 @@ namespace Server.Handlers
             {
                 respuesta.Exitoso = false;
                 respuesta.MensajeError = "Sesión inválida o expirada";
-                PacketSender.EnviarTCP(peer, respuesta);
+                PacketSender.EnviarOrdenado(peer, respuesta);
                 return;
             }
             respuesta.Exitoso = true;
             respuesta.NombreUsuario = sesion.NombreUsuario;
             respuesta.IdUsuario = sesion.UsuarioId;
             respuesta.Token = sesion.Token; 
-            PacketSender.EnviarTCP(peer, respuesta);
+            PacketSender.EnviarOrdenado(peer, respuesta);
 
         }
     }
