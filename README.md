@@ -32,28 +32,27 @@ El servidor corre un **tick loop autoritativo a 20 Hz**, valida el movimiento re
 ## 2. Arquitectura
 
 ```
-┌─────────────────────┐        UDP (LiteNetLib)        ┌──────────────────────┐
-│   Cliente (Godot)    │ ◄─────────────────────────────► │   Server (consola)    │
-│                      │      MessagePack + Sobre        │                      │
+┌──────────────────────┐        UDP (LiteNetLib)          ┌──────────────────────┐
+│   Cliente (Godot)    │ ◄───────────────────────────────►│   Server (consola)   │
+│                      │      MessagePack + Sobre         │                      │
 │  Red/Cliente.cs      │                                  │  Red/NetworkServer   │
 │  Red/Router.cs       │                                  │  Red/Router          │
 │  Handlers/*          │                                  │  Handlers/*          │
 │  Game/GameState      │                                  │  Mundo/World (tick)  │
 │  Game/World, Player  │                                  │  Managers/Session    │
 └─────────┬────────────┘                                  │  Managers/DataBase   │
-          │                                                │  Servicios/Auth      │
-          │ referencia                                     └──────────┬───────────┘
-          ▼                                                            │
-┌────────────────────────────────────────────────────────────────────┴───┐
-│                        Shared (Class Library, net8.0)                   │
+          │                                               │  Servicios/Auth      │
+          │ referencia                                    └───────────┬──────────┘
+          ▼                                                           │
+┌─────────────────────────────────────────────────────────────────────┴────┐
+│                        Shared (Class Library, net8.0)                    │
 │  Paquetes/* (DTOs MessagePack)  ·  Tipos/* (Vector2, Chunk, PlayerState) │
-│  utils/PacketSender · utils/Claves                                      │
-└───────────────────────────────────────────────────────────────────────┘
+│  utils/PacketSender · utils/Claves                                       │
+└──────────────────────────────────────────────────────────────────────────┘
                                     │
                                     ▼
                          SQLite (game.db) vía EF Core
 ```
-
 Ambos extremos (`Server/Red/Router.cs` y `cliente/Red/Router.cs`) implementan el mismo patrón: leer un byte de tipo de paquete + payload MessagePack, deserializar según un diccionario `TipoPaquete → Type`, y despachar a un handler específico.
 
 ## 3. Estructura del repositorio
