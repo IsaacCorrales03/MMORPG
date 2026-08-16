@@ -9,6 +9,7 @@ namespace Server.Managers
     {
         private static readonly ConcurrentDictionary<string, Sesion> _sesionesPorToken = new();
         private static readonly ConcurrentDictionary<int, string> _tokenPorUsuarioId = new();
+        private static readonly ConcurrentDictionary<int, NetPeer> _peerPorUsuarioId = new();
         public static Sesion CrearSesion(int UsuarioId, string NombreUsuario, NetPeer peer)
         {
             // Si el usuario ya tenía una sesión activa (login desde otro lado), la invalidamos primero
@@ -28,6 +29,7 @@ namespace Server.Managers
             };
             _sesionesPorToken[token] = sesion;
             _tokenPorUsuarioId[UsuarioId] = token;
+            _peerPorUsuarioId[UsuarioId] = peer;
             peer.Tag = sesion;
             return sesion;
         }
@@ -43,11 +45,12 @@ namespace Server.Managers
 
                 sesion.Peer = nuevoPeer;
                 nuevoPeer.Tag = sesion;
+                _peerPorUsuarioId[sesion.UsuarioId] = nuevoPeer;
                 return true;
             }
             sesion = null;
             return false;
-        } 
+        }
         public static void CerrarSesion(string token)
         {
             if (_sesionesPorToken.TryRemove(token, out Sesion? sesion))
@@ -56,5 +59,14 @@ namespace Server.Managers
             }
         }
         public static Sesion? ObtenerPorPeer(NetPeer peer) => peer.Tag as Sesion;
+        public static NetPeer? ObtenerPeer(int UsuarioId)
+        {
+            _peerPorUsuarioId.TryGetValue(
+                UsuarioId,
+                out NetPeer? peer
+            );
+
+            return peer;
+        }
     }
 }

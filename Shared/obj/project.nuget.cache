@@ -9,8 +9,8 @@
     "/home/Cherry/.nuget/packages/messagepack.annotations/3.1.8/messagepack.annotations.3.1.8.nupkg.sha512",
     "/home/Cherry/.nuget/packages/messagepackanalyzer/3.1.8/messagepackanalyzer.3.1.8.nupkg.sha512",
     "/home/Cherry/.nuget/packages/microsoft.net.stringtools/17.11.4/microsoft.net.stringtools.17.11.4.nupkg.sha512",
-    "/home/Cherry/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.28/microsoft.aspnetcore.app.ref.8.0.28.nupkg.sha512",
-    "/home/Cherry/.nuget/packages/microsoft.netcore.app.ref/8.0.28/microsoft.netcore.app.ref.8.0.28.nupkg.sha512"
+    "/home/Cherry/.nuget/packages/microsoft.netcore.app.ref/8.0.28/microsoft.netcore.app.ref.8.0.28.nupkg.sha512",
+    "/home/Cherry/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.28/microsoft.aspnetcore.app.ref.8.0.28.nupkg.sha512"
   ],
   "logs": []
 }

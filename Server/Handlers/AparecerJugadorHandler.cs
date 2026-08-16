@@ -31,7 +31,7 @@ namespace Server.Handlers
                 respuesta.MensajeDeError = "No existe una sesión asociada.";
                 return;
             }
-            _world.AddPlayer(jugadorId, peticion.Position);
+            _world.AddPlayer(jugadorId, peticion.Position, session.NombreUsuario);
             respuesta.Exitoso = true;
             respuesta.Posicion = new Vector2(0,0);
             //acá podríamos obtener su ultima posicion del session manager

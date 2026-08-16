@@ -30,8 +30,7 @@ public partial class Register : Control
 
 	private void OnRegistroExitoso()
 	{
-
-		GameState.Instance.IniciarJuego();
+		
 	}
 
 	private void alPresionarLogin()
@@ -59,7 +58,7 @@ public partial class Register : Control
 			Clave = clave,
 			Email = email,
 		};
-		Shared.Utils.PacketSender.EnviarTCP(Cliente.Instancia.Peer, paquete);
+		Shared.Utils.PacketSender.EnviarOrdenado(Cliente.Instancia.Peer, paquete);
 	}
 
 	private void AgregarEsquinasOrnamentales()

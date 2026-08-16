@@ -8,8 +8,8 @@ using Shared.Utils;
 
 public partial class Cliente : Node
 {
-	private string IP_Servidor = "127.0.0.1";
-	private int Puerto = 8455;
+	private string IP_Servidor;
+	private int Puerto;
 	private EventBasedNetListener _listener;
 	private NetManager _server;
 	private string Token;
@@ -42,10 +42,45 @@ public partial class Cliente : Node
 	public override void _Ready()
 	{
 		Instancia = this;
+		CargarConfiguracion();
 		IniciarTimeoutDeConexion();
 		GameState.Instance.SesionReanudadaFallida += OnSesionReanudadaFallida;
 		GameState.Instance.SesionReanudadaExitosa += OnSesionReanudadaExitosa;
-		
+
+	}
+	private void CargarConfiguracion()
+	{
+		string ruta = OS.GetExecutablePath().GetBaseDir().PathJoin("config.json");
+
+		if (!FileAccess.FileExists(ruta))
+		{
+			string configDefault = """
+		{
+			"server_ip": "127.0.0.1",
+			"server_port": 8455
+		}
+		""";
+
+			using var archivo = FileAccess.Open(ruta, FileAccess.ModeFlags.Write);
+			archivo.StoreString(configDefault);
+
+			GD.Print("Configuración creada en: " + ruta);
+		}
+
+		string contenido = FileAccess.GetFileAsString(ruta);
+
+		var json = new Json();
+
+		if (json.Parse(contenido) != Error.Ok)
+		{
+			GD.PrintErr("Error leyendo config.json");
+			return;
+		}
+
+		var config = (Godot.Collections.Dictionary)json.Data;
+
+		IP_Servidor = config["server_ip"].ToString();
+		Puerto = Convert.ToInt32(config["server_port"]);
 	}
 	public EstadoConexion get_status()
 	{
@@ -59,7 +94,7 @@ public partial class Cliente : Node
 	{
 		_server?.Stop();
 	}
-	
+
 	private void CambiarEstadoConexion(EstadoConexion estado)
 	{
 		estadoConexion = estado;
@@ -77,7 +112,7 @@ public partial class Cliente : Node
 	{
 		if (GameState.Conectado || estadoConexion == EstadoConexion.Conectado)
 			return;
-		
+
 		CambiarEstadoConexion(EstadoConexion.Conectando);
 		IniciarTimeoutDeConexion();
 		_listener = new();
@@ -93,7 +128,7 @@ public partial class Cliente : Node
 			return;
 		}
 		_server.Connect(IP_Servidor, Puerto, Claves.ClaveServidor);
-		
+
 	}
 	private void OnSesionReanudadaFallida(string mensaje)
 	{
@@ -135,7 +170,7 @@ public partial class Cliente : Node
 			PaquetePeticionReanudarSesion paquete = new();
 			paquete.Token = Token;
 
-			PacketSender.EnviarTCP(Peer, paquete);
+			PacketSender.EnviarOrdenado(Peer, paquete);
 		}
 		else
 		{

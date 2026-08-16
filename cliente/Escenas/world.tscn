@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://b8geoe0gqwo3v"]
 
 [ext_resource type="PackedScene" uid="uid://dvv7gw18ogwib" path="res://Escenas/player.tscn" id="1_8usl3"]
+[ext_resource type="Script" uid="uid://cir1jell4s77t" path="res://Game/World.cs" id="1_r16dl"]
 [ext_resource type="Script" uid="uid://1ei1hqcgr2j6" path="res://Game/Enemy.cs" id="2_r16dl"]
-[ext_resource type="FontFile" uid="uid://cbh3j85ttick4" path="res://Assets/Fonts/Cinzel-ExtraBold.ttf" id="3_255mg"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_k6bia"]
 size = Vector2(56, 71)
@@ -11,8 +11,8 @@ size = Vector2(56, 71)
 size = Vector2(56, 72)
 
 [node name="Node2D" type="Node2D" unique_id=1201243137]
-
-[node name="Player" parent="." unique_id=1339410373 instance=ExtResource("1_8usl3")]
+script = ExtResource("1_r16dl")
+_jugadorEscena = ExtResource("1_8usl3")
 
 [node name="StaticBody2D" type="Area2D" parent="." unique_id=1084978236]
 position = Vector2(87, 10)
@@ -35,21 +35,5 @@ shape = SubResource("RectangleShape2D_k6bia")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D/StaticBody2D" unique_id=2143244823]
 position = Vector2(141, 37)
 shape = SubResource("RectangleShape2D_te065")
-
-[node name="Etiqueta" type="HBoxContainer" parent="." unique_id=963283873]
-custom_minimum_size = Vector2(72, 18)
-offset_left = -108.0
-offset_top = -56.0
-offset_right = 108.0
-offset_bottom = -31.0
-alignment = 1
-
-[node name="Nombre" type="Label" parent="Etiqueta" unique_id=1329196576]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_fonts/font = ExtResource("3_255mg")
-theme_override_font_sizes/font_size = 24
-horizontal_alignment = 1
-vertical_alignment = 1
 
 [connection signal="area_entered" from="StaticBody2D" to="StaticBody2D" method="_on_area_entered"]

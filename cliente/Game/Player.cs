@@ -1,18 +1,43 @@
+using Client.Juego;
 using Godot;
 using Shared.Paquetes;
+using Shared.Utils;
 using System;
 
 public partial class Player : CharacterBody2D
 {
-	public const float Speed = 200.0f;
+	public const float MoveSpeed = 200.0f;
+
+	private long sequence = 0;
 
 	[Export] public AnimatedSprite2D sprite;
 	[Export] public Area2D hurtbox;
+	[Export] public Label nombre;
+	[Export] public Camera2D camera;
+
 	public CollisionShape2D hurtBoxShape;
+
 	private Vector2 lastDirection = Vector2.Down;
+	private Vector2 lastInput = Vector2.Zero;
+
 	private bool isAttacking = false;
+
+	public bool EsLocal { get; private set; }
+	public int PlayerId { get; private set; }
+
 	public bool isMultiplayerAuthority;
-	
+	public bool isMovingInTheSameDirection;
+
+	public int consecutive = 1;
+
+	// ---------- Interpolación remota ----------
+
+	private Vector2 targetPosition;
+	private bool hasTargetPosition = false;
+
+	// Velocidad de seguimiento visual.
+	// Mayor = sigue más rápido al snapshot.
+	private const float RemoteInterpolationSpeed = 8.0f;
 
 
 	public override void _Ready()
@@ -20,68 +45,49 @@ public partial class Player : CharacterBody2D
 		isMultiplayerAuthority = IsMultiplayerAuthority();
 
 		sprite.AnimationFinished += OnAnimationFinished;
-		CollisionShape2D hurtBoxShape = hurtbox.GetChild<CollisionShape2D>(0);
+
+		hurtBoxShape = hurtbox.GetChild<CollisionShape2D>(0);
+
+		if (nombre == null)
+			nombre = GetNode<Label>("Etiqueta/Nombre");
 	}
 
 
-	public void Attack()
+	// ---------- Configuración ----------
+
+	public void Configurar(
+		int playerId,
+		bool esLocal,
+		string nombreJugador)
 	{
-		if (isAttacking)
-			return;
+		PlayerId = playerId;
+		EsLocal = esLocal;
 
-		isAttacking = true;
-		hurtbox.GetChild<CollisionShape2D>(0).Disabled = false;
+		nombre.Text = nombreJugador;
+		camera.Enabled = esLocal;
+	}
 
-		Velocity = Vector2.Zero;
 
-		switch (lastDirection)
+	// ---------- Snapshots ----------
+
+	public void AplicarSnapshot(Vector2 posicion)
+	{
+		targetPosition = posicion;
+
+		if (!hasTargetPosition)
 		{
-			case var d when d == Vector2.Left:
-				sprite.Play("attack_left");
-				hurtbox.Position = new Vector2 {X = -20, Y = 0};
-				
-				break;
-
-			case var d when d == Vector2.Right:
-				sprite.Play("attack_right");
-				hurtbox.Position = new Vector2 {X = 20, Y = 0};
-				break;
-
-			case var d when d == Vector2.Up:
-				sprite.Play("attack_up");
-				hurtbox.Position = new Vector2 {X = 0, Y = -20};
-				break;
-
-			case var d when d == Vector2.Down:
-				sprite.Play("attack_down");
-				hurtbox.Position = new Vector2 {X = 0, Y = 20};
-				
-				break;
+			Position = posicion;
+			hasTargetPosition = true;
 		}
 	}
-
-
-	private void OnAnimationFinished()
+	public void AplicarEstadoRemoto(
+	Vector2 direction,
+	bool moving)
 	{
-		if (!isAttacking)
-			return;
-
-		isAttacking = false;
-		hurtbox.GetChild<CollisionShape2D>(0).Disabled = true;
-	}
-
-
-	public void Move(Vector2 direction)
-	{
-		if (isAttacking)
+		if (!moving)
 		{
 			Velocity = Vector2.Zero;
-			return;
-		}
 
-		if (direction == Vector2.Zero)
-		{
-			Velocity = Vector2.Zero;
 			switch (lastDirection)
 			{
 				case var d when d == Vector2.Left:
@@ -96,7 +102,7 @@ public partial class Player : CharacterBody2D
 					sprite.Play("idle_up");
 					break;
 
-				case var d when d == Vector2.Down:
+				default:
 					sprite.Play("idle_down");
 					break;
 			}
@@ -104,53 +110,181 @@ public partial class Player : CharacterBody2D
 			return;
 		}
 
-		Velocity = direction * Speed;
-		
-		PaqueteMovimiento paqueteMovimiento = new()
-		{
-			ReportedPosition = new Shared.Tipos.Vector2(Position.X, Position.Y)
-		};
+		lastDirection = direction.Normalized();
 
-		if (direction.X < 0)
+		if (lastDirection == Vector2.Left)
+			sprite.Play("walk_left");
+		else if (lastDirection == Vector2.Right)
+			sprite.Play("walk_right");
+		else if (lastDirection == Vector2.Up)
+			sprite.Play("walk_up");
+		else if (lastDirection == Vector2.Down)
+			sprite.Play("walk_down");
+	}
+
+
+	// ---------- Ataque ----------
+
+	public void Attack()
+	{
+		if (isAttacking)
+			return;
+
+		isAttacking = true;
+
+		hurtBoxShape.Disabled = false;
+
+		Velocity = Vector2.Zero;
+
+		switch (lastDirection)
+		{
+			case var d when d == Vector2.Left:
+				sprite.Play("attack_left");
+				hurtbox.Position = new Vector2(-20, 0);
+				break;
+
+			case var d when d == Vector2.Right:
+				sprite.Play("attack_right");
+				hurtbox.Position = new Vector2(20, 0);
+				break;
+
+			case var d when d == Vector2.Up:
+				sprite.Play("attack_up");
+				hurtbox.Position = new Vector2(0, -20);
+				break;
+
+			case var d when d == Vector2.Down:
+				sprite.Play("attack_down");
+				hurtbox.Position = new Vector2(0, 20);
+				break;
+		}
+	}
+
+
+	private void OnAnimationFinished()
+	{
+		if (!isAttacking)
+			return;
+
+		isAttacking = false;
+
+		hurtBoxShape.Disabled = true;
+	}
+
+
+	// ---------- Movimiento local ----------
+
+	public void Move(Vector2 direction)
+	{
+		Velocity = direction * MoveSpeed;
+
+		Vector2 currentDirection = direction.Normalized();
+
+		isMovingInTheSameDirection =
+			currentDirection == lastDirection;
+
+		if (direction != Vector2.Zero)
+			lastDirection = currentDirection;
+
+		if (currentDirection == Vector2.Left)
+			sprite.Play("walk_left");
+		else if (currentDirection == Vector2.Right)
+			sprite.Play("walk_right");
+		else if (currentDirection == Vector2.Up)
+			sprite.Play("walk_up");
+		else if (currentDirection == Vector2.Down)
+			sprite.Play("walk_down");
+		else
 		{
 			if (lastDirection == Vector2.Left)
-			{
-				
-			}
-			lastDirection = Vector2.Left;
-			sprite.Play("walk_left");
-		}
-		else if (direction.X > 0)
-		{
-			lastDirection = Vector2.Right;
-			sprite.Play("walk_right");
-		}
-		else if (direction.Y < 0)
-		{
-			lastDirection = Vector2.Up;
-			sprite.Play("walk_up");
-		}
-		else if (direction.Y > 0)
-		{
-			lastDirection = Vector2.Down;
-			sprite.Play("walk_down");
+				sprite.Play("idle_left");
+			else if (lastDirection == Vector2.Right)
+				sprite.Play("idle_right");
+			else if (lastDirection == Vector2.Up)
+				sprite.Play("idle_up");
+			else
+				sprite.Play("idle_down");
 		}
 	}
 
 
 	public override void _PhysicsProcess(double delta)
 	{
-		if (!IsMultiplayerAuthority())
-        return;
+		// Los jugadores remotos NO ejecutan movimiento local.
+		if (!EsLocal)
+			return;
+
+		sequence++;
+
 		Vector2 direction = GetInputDirection();
+
+		bool sameInput = direction == lastInput;
+
+		Vector2 firstPosition = Position;
 
 		Move(direction);
 		MoveAndSlide();
+
+		Vector2 finalPosition = Position;
+
+		bool moved = firstPosition != finalPosition;
+
+		if (sameInput)
+			consecutive += 1;
+		else
+			consecutive = 1;
+
+		lastInput = direction;
+
+		PaqueteMovimiento movimiento = new()
+		{
+			Sequence = sequence,
+
+			Input = new Shared.Tipos.Vector2(
+				lastInput.X,
+				lastInput.Y
+			),
+
+			Consecutive = consecutive,
+
+			ReportedPosition = new Shared.Tipos.Vector2(
+				finalPosition.X,
+				finalPosition.Y
+			),
+
+			Moved = moved
+		};
+
+		PacketSender.EnviarMovimiento(
+			Cliente.Instancia.Peer,
+			movimiento
+		);
 	}
 
 
+	// ---------- Interpolación remota ----------
+
+	public override void _Process(double delta)
+	{
+		if (EsLocal || !hasTargetPosition)
+			return;
+
+		float weight = 1.0f -Mathf.Exp(-RemoteInterpolationSpeed * (float)delta);
+
+		Position = Position.Lerp(
+			targetPosition,
+			weight
+		);
+	}
+
+
+	// ---------- Input ----------
+
 	public override void _Input(InputEvent @event)
 	{
+		if (!EsLocal)
+			return;
+
 		if (@event is InputEventMouseButton mouseEvent &&
 			mouseEvent.ButtonIndex == MouseButton.Left &&
 			mouseEvent.Pressed)

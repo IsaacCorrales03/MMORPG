@@ -77,7 +77,7 @@ public partial class Login : Control
 			Usuario = usuario,
 			Clave = clave,
 		};
-		PacketSender.EnviarTCP(Cliente.Instancia.Peer, paquete);
+		PacketSender.EnviarOrdenado(Cliente.Instancia.Peer, paquete);
 	}
 
 

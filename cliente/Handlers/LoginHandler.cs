@@ -1,5 +1,6 @@
 using Client.Juego;
 using Client.Red;
+using Godot;
 using Shared.Paquetes;
 
 namespace Client.Handlers
@@ -10,6 +11,7 @@ namespace Client.Handlers
         {
             if (paquete.Exitoso)
             {
+                
                 TokenManager.GuardarToken(paquete.Token);
                 GameState.Token = paquete.Token;
                 GameState.NombreUsuario = paquete.Username;

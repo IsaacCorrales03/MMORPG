@@ -4,12 +4,14 @@ namespace Shared.Paquetes
     {
         PeticionInicioSesion,
         RespuestaInicioSesion,
-        AparecerJugador,
         PeticionAparecerJugador,
         PeticionRegistro,
         RespuestaRegistro,
         PeticionReanudarSesion,
         RespuestaReanudarSesion,
-        Movimiento
+        Movimiento,
+        RespuestaAparecerJugador,
+        Snapshot
+        
     }
 }
