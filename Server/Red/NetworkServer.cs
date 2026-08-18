@@ -14,6 +14,7 @@ namespace Server.Red
         public bool Running { get; private set; }
         public int MaximoJugadores { get; }
         public int Puerto { get; }
+        public event Action<NetPeer>? JugadorDesconectado;
         private PacketRouter _router; 
         // Dependencias del servidor
         // dependencia de router y packet sender
@@ -98,6 +99,7 @@ namespace Server.Red
 
         private void OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectionInfo)
         {
+            JugadorDesconectado?.Invoke(peer);
             ServerConsole.Log($"- Cliente desconectado: {peer.Address} (id interno: {peer.Id}), razón: {disconnectionInfo.Reason}");
         }
 

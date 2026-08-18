@@ -1,7 +1,7 @@
 using Client.Juego;
 using Godot;
 using Shared.Paquetes;
-
+using Shared.Utils;
 using System;
 using System.Collections.Generic;
 
@@ -11,7 +11,8 @@ public partial class World : Node2D
 	public PackedScene _jugadorEscena;
 
 	private readonly Dictionary<int, Player> _players = new();
-
+	private readonly HashSet<int> _jugadoresRecibidos = new();
+	private readonly List<int> _jugadoresParaEliminar = new();
 
 	public override void _Ready()
 	{
@@ -25,7 +26,7 @@ public partial class World : Node2D
 	{
 		if (GameState.Instance == null)
 			return;
-
+		//PacketSender.EnviarOrdenado()
 		GameState.Instance.AparecerJugador -= OnAparecerJugador;
 		GameState.Instance.SnapshotRecibido -= OnSnapshotRecibido;
 	}
@@ -77,12 +78,15 @@ public partial class World : Node2D
 	// SNAPSHOT
 	// =========================================================
 
+	// recibimos las snapshots, las cuales tienen a los jugadores
+	// al terminar de procesar jugadores, los que no estén en la lista de snapshots, se eliminan
 	private void OnSnapshotRecibido(PaqueteSnapshots paquete)
 	{
 		int playerIdLocal = GameState.IdUsuario ?? 0;
-
+		_jugadoresRecibidos.Clear();
 		foreach (PlayerSnapshot snapshot in paquete.Players)
 		{
+			_jugadoresRecibidos.Add(snapshot.PlayerId);
 			// El snapshot NO controla al jugador local.
 			if (snapshot.PlayerId == playerIdLocal)
 			{
@@ -119,11 +123,11 @@ public partial class World : Node2D
 			// Actualizar objetivo
 			// -----------------------------------------
 
-			Godot.Vector2 posicion = new Godot.Vector2(
+			Vector2 posicion = new Vector2(
 				snapshot.Position.X,
 				snapshot.Position.Y
 			);
-			Godot.Vector2 direccion = new(
+			Vector2 direccion = new(
 				snapshot.Direction.X,
 				snapshot.Direction.Y
 			);
@@ -131,6 +135,18 @@ public partial class World : Node2D
 
 			jugador.AplicarSnapshot(posicion);
 			jugador.AplicarEstadoRemoto(direccion, snapshot.Moving);
+		}
+		_jugadoresParaEliminar.Clear();
+		foreach (int id in _players.Keys)
+		{
+			if (!_jugadoresRecibidos.Contains(id))
+				_jugadoresParaEliminar.Add(id);
+		}
+		foreach (int id in _jugadoresParaEliminar)
+		{
+			GD.Print($"Jugador remoto eliminado - {_players[id].nombre}");
+			_players[id].QueueFree();
+			_players.Remove(id);
 		}
 	}
 

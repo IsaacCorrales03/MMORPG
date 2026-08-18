@@ -1,3 +1,5 @@
+using LiteNetLib;
+using Server.Managers;
 using Server.Mundo;
 using Server.Red;
 
@@ -18,6 +20,15 @@ public class GameServer
     {
         _mundo = new World();
         _servidorRed = new NetworkServer(10, 8455, _mundo);
+        _servidorRed.JugadorDesconectado += OnJugadorDesconectado;
+    }
+    public void OnJugadorDesconectado(NetPeer peer)
+    {
+        int? id = SesionManager.ObtenerIdPorPeer(peer);
+        if (id.HasValue)
+        {
+            _mundo.RemovePlayer(id.Value);
+        }    
     }
 
     public void Start()

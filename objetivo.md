@@ -18,7 +18,7 @@ El jugador local tendrá predicción de movimiento y reconciliación, manteniend
 
 ---
 
-## 2. AOI — Spawn y Despawn de jugadores
+## 2. AOI — Spawn y Despawn de jugadores - Realizado
 
 ### Objetivo general
 Hacer que cada cliente solamente mantenga en escena las entidades que se encuentran dentro de su área de interés.
@@ -47,7 +47,7 @@ El cliente tendrá únicamente los jugadores que realmente necesita representar.
 
 ---
 
-## 3. Desconexión y reconexión
+## 3. Desconexión y reconexión - Realizado
 
 ### Objetivo general
 Garantizar que las conexiones y desconexiones no dejen entidades duplicadas, jugadores fantasma o referencias inválidas.
@@ -83,7 +83,7 @@ Sin jugadores duplicados ni cámaras incorrectas.
 
 ---
 
-## 4. Snapshots e interpolación
+## 4. Snapshots e interpolación - Realizado 
 
 ### Objetivo general
 Conseguir que el movimiento remoto sea visualmente fluido independientemente de que las snapshots lleguen a 20 Hz.
@@ -256,3 +256,8 @@ El sistema de red dejará de estar diseñado específicamente alrededor de `Play
 | 5 | Combate                        | Alta      |
 | 6 | Vida/Daño/Muerte                | Alta      |
 | 7 | Sistema general de entidades    | Media     |
+
+
+## Bugs Count:
+- Si dos jugadores chocan, uno puede transportar al otro
+- No deberían de poder existir dos clientes con el mismo id mandando ordenes

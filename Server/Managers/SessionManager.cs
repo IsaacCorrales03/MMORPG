@@ -68,5 +68,10 @@ namespace Server.Managers
 
             return peer;
         }
+        public static int? ObtenerIdPorPeer(NetPeer peer)
+        {
+            Sesion? sesion = ObtenerPorPeer(peer);
+            return sesion?.UsuarioId;
+        }
     }
 }
