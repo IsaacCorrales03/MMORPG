@@ -72,7 +72,7 @@ namespace Server.Mundo
         {
             return _tiposDeEventos.Contains(tipo);
         }
-
+        
         private PlayerSnapshot BuildSnapshot(PlayerState player)
         {
             return new PlayerSnapshot
@@ -95,8 +95,11 @@ namespace Server.Mundo
         }
         private PaqueteSnapshots BuildPacketSnapshots(PlayerState receptor)
         {
-            PaqueteSnapshots packet = new();
-            packet.Tick = _currentTick;
+            PaqueteSnapshots packet = new()
+            {
+                Tick = _currentTick,
+                LastSequenceProcessed = receptor.LastSequenceProcessed
+            };
 
             ChunkPosition centro = receptor.chunkPosition;
 
@@ -124,7 +127,7 @@ namespace Server.Mundo
         private void ProcesarMovimiento(PlayerState player, PaqueteMovimiento movimiento)
         {
             player.IsMoving = movimiento.Moved;
-
+            player.LastSequenceProcessed = movimiento.Sequence;
             player.LastDirection = new Vector2(
                 movimiento.Input.X,
                 movimiento.Input.Y
@@ -148,6 +151,17 @@ namespace Server.Mundo
                 {
                     Vector2 direccion = (reportada - anterior).Normalized();
                     player.Position = anterior + direccion * DistanciaMaxima;
+                    PaqueteCorrecionMovimiento paquete = new()
+                    {
+                        Posicion = player.Position,
+                        LastSequenceProcessed = player.LastSequenceProcessed,
+                        PlayerId = player.PlayerId
+                    };
+                    NetPeer? peer = SesionManager.ObtenerPeer(player.PlayerId);
+                    if (peer != null)
+                    {
+                        PacketSender.EnviarOrdenado(peer, paquete);
+                    }
                 }
                 ChunkPosition chunk_anterior = player.chunkPosition;
                 ChunkPosition chunk_nuevo = ChunkPosition.FromPosition(player.Position);

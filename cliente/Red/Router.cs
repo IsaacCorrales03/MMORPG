@@ -16,7 +16,9 @@ namespace Client.Red
 			{ TipoPaquete.RespuestaInicioSesion, typeof(PaqueteRespuestaInicioSesion) },
 			{ TipoPaquete.RespuestaReanudarSesion, typeof(PaqueteRespuestaReanudarSesion) },
 			{ TipoPaquete.RespuestaAparecerJugador, typeof(PaqueteRespuestaAparecerJugador)},
-			{ TipoPaquete.Snapshot, typeof(PaqueteSnapshots)}
+			{ TipoPaquete.Snapshot, typeof(PaqueteSnapshots)},
+			{ TipoPaquete.CorrecionMovimiento, typeof(PaqueteCorrecionMovimiento)}
+
 		};
 
 		public static void Enrutar(TipoPaquete tipoPaquete, byte[] contenido, NetPeer peer)
@@ -57,6 +59,9 @@ namespace Client.Red
 					break;
 				case PaqueteSnapshots snapshot:
 					SnapshotHandler.Manejar(snapshot);
+					break;
+				case PaqueteCorrecionMovimiento correcion:
+					CorrecionMovimientoHandler.Manejar(correcion);
 					break;
 				default:
 					GD.Print($"No existe un handler para {tipoPaquete}");

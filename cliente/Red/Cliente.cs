@@ -80,7 +80,7 @@ public partial class Cliente : Node
 		var config = (Godot.Collections.Dictionary)json.Data;
 
 		IP_Servidor = config["server_ip"].ToString();
-		Puerto = Convert.ToInt32(config["server_port"]);
+		Puerto = config["server_port"].AsInt32();
 	}
 	public EstadoConexion get_status()
 	{

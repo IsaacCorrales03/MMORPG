@@ -1,7 +1,7 @@
 using Client.Juego;
 using Godot;
 using Shared.Paquetes;
-using Shared.Tipos;
+
 using System;
 using System.Collections.Generic;
 
@@ -17,6 +17,7 @@ public partial class World : Node2D
 	{
 		GameState.Instance.AparecerJugador += OnAparecerJugador;
 		GameState.Instance.SnapshotRecibido += OnSnapshotRecibido;
+		GameState.Instance.CorregirMovimiento += OnCorregirMovimiento;
 	}
 
 
@@ -33,6 +34,15 @@ public partial class World : Node2D
 	// =========================================================
 	// JUGADOR LOCAL
 	// =========================================================
+
+	private void OnCorregirMovimiento(int playerId, long LastSequenceProcessed, Vector2 posicion)
+	{
+		_players.TryGetValue(playerId, out Player jugador);
+		if (jugador != null)
+		{
+			jugador.AplicarCorrecciónDePosicion(posicion, LastSequenceProcessed);
+		}
+	}
 
 	public void OnAparecerJugador()
 	{
@@ -67,42 +77,37 @@ public partial class World : Node2D
 	// SNAPSHOT
 	// =========================================================
 
-	private void OnSnapshotRecibido(
-		PaqueteSnapshots paquete)
+	private void OnSnapshotRecibido(PaqueteSnapshots paquete)
 	{
-		int playerIdLocal =
-			GameState.IdUsuario ?? 0;
+		int playerIdLocal = GameState.IdUsuario ?? 0;
 
 		foreach (PlayerSnapshot snapshot in paquete.Players)
 		{
 			// El snapshot NO controla al jugador local.
 			if (snapshot.PlayerId == playerIdLocal)
+			{
+				if (_players.TryGetValue(playerIdLocal, out Player localJugador))
+				{
+					localJugador.LimpiarInputs(paquete.LastSequenceProcessed);
+				}
+
 				continue;
+			}
 
 
 			// -----------------------------------------
 			// Crear jugador remoto si no existe
 			// -----------------------------------------
 
-			if (!_players.TryGetValue(
-					snapshot.PlayerId,
-					out Player jugador))
+			if (!_players.TryGetValue(snapshot.PlayerId, out Player jugador))
 			{
-				jugador =
-					_jugadorEscena.Instantiate<Player>();
+				jugador = _jugadorEscena.Instantiate<Player>();
 
 				AddChild(jugador);
 
-				jugador.Configurar(
-					snapshot.PlayerId,
-					false,
-					snapshot.Nombre
-				);
+				jugador.Configurar(snapshot.PlayerId, false, snapshot.Nombre);
 
-				_players.Add(
-					snapshot.PlayerId,
-					jugador
-				);
+				_players.Add(snapshot.PlayerId, jugador);
 
 				GD.Print(
 					$"Jugador remoto creado: {snapshot.PlayerId}"

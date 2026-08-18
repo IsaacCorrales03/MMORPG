@@ -9,6 +9,7 @@ namespace Shared.Tipos
         public Vector2 LastDirection { get; set; } = new Vector2();
         public bool IsMoving { get; set; }
         public string Nombre;
+        public long LastSequenceProcessed { get; set; }
         public PlayerState(int playerId, Vector2 position, string nombre)
         {
             PlayerId = playerId;

@@ -1,5 +1,3 @@
-using System.ComponentModel;
-using System.Text.Json;
 using LiteNetLib;
 using Server.Mundo;
 using Shared.Paquetes;
@@ -19,6 +17,17 @@ namespace Server.Red
         private PacketRouter _router; 
         // Dependencias del servidor
         // dependencia de router y packet sender
+
+        /// <summary>Cantidad de peers conectados ahora mismo (0 si el servidor no está corriendo).</summary>
+        public int JugadoresConectados => _server?.ConnectedPeersCount ?? 0;
+
+        /// <summary>
+        /// Estadísticas acumuladas de red (bytes/paquetes enviados y recibidos) desde que
+        /// arrancó el NetManager. Null si el servidor no está corriendo. Usalas para calcular
+        /// throughput (KB/s) tomando el delta entre dos lecturas.
+        /// </summary>
+        public NetStatistics? Estadisticas => _server?.Statistics;
+
         public NetworkServer(int maximoJugadores, int puerto, World world)
         {
             MaximoJugadores = maximoJugadores;
@@ -43,18 +52,16 @@ namespace Server.Red
             _listener.NetworkReceiveEvent += (peer, reader, channel, deliveryMethod) => OnNetworkReceive(peer, reader, channel, deliveryMethod);
             
             // Nueva instancia del servidor netlib:
-            _server = new(_listener);
+            _server = new(_listener)
+            {
+                EnableStatistics = true // necesario para que Statistics se llene
+            };
             if (!_server.Start(Puerto))
             {
 
                 throw new Exception($"No se pudo iniciar el servidor en el puerto {Puerto}.");
             }
             Running = true;
-            Console.WriteLine("====================================");
-            Console.WriteLine("Astera Server Iniciado correctamente");
-            Console.WriteLine($"Puerto: {Puerto}");
-            Console.WriteLine($"Maximo de jugadores: {MaximoJugadores}");
-            Console.WriteLine("====================================");
         }
         public void Stop()
         {
@@ -70,9 +77,6 @@ namespace Server.Red
 
             Running = false;
 
-            Console.WriteLine("====================================");
-            Console.WriteLine("Astera Server detenido.");
-            Console.WriteLine("====================================");
         }
         public void PollEvents()
         {
@@ -89,12 +93,12 @@ namespace Server.Red
 
         private void OnPeerConnected(NetPeer peer)
         {
-            Console.WriteLine($"Nuevo cliente: {peer}");
+            ServerConsole.Log($"+ Cliente conectado: {peer.Address} (id interno: {peer.Id})");
         }
 
         private void OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectionInfo)
         {
-            Console.WriteLine($"Cliente desconectado: {peer}, razón: {disconnectionInfo.Reason}");
+            ServerConsole.Log($"- Cliente desconectado: {peer.Address} (id interno: {peer.Id}), razón: {disconnectionInfo.Reason}");
         }
 
         private void OnConnectionRequest(ConnectionRequest request)
@@ -120,7 +124,7 @@ namespace Server.Red
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error inesperado procesando paquete de {peer}: {ex}");
+                ServerConsole.Log($"Error procesando paquete de {peer.Address}: {ex.Message}");
             }
             finally
             {

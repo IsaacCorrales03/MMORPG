@@ -11,7 +11,8 @@ namespace Shared.Paquetes
         RespuestaReanudarSesion,
         Movimiento,
         RespuestaAparecerJugador,
-        Snapshot
+        Snapshot,
+        CorrecionMovimiento
         
     }
 }

@@ -3,6 +3,7 @@ using Godot;
 using Shared.Paquetes;
 using Shared.Utils;
 using System;
+using System.Collections.Generic;
 
 public partial class Player : CharacterBody2D
 {
@@ -22,6 +23,8 @@ public partial class Player : CharacterBody2D
 
 	private bool isAttacking = false;
 
+	private Queue<PaqueteMovimiento> inputsPendientes = new();
+
 	public bool EsLocal { get; private set; }
 	public int PlayerId { get; private set; }
 
@@ -36,7 +39,6 @@ public partial class Player : CharacterBody2D
 	private bool hasTargetPosition = false;
 
 	// Velocidad de seguimiento visual.
-	// Mayor = sigue más rápido al snapshot.
 	private const float RemoteInterpolationSpeed = 8.0f;
 
 
@@ -55,10 +57,7 @@ public partial class Player : CharacterBody2D
 
 	// ---------- Configuración ----------
 
-	public void Configurar(
-		int playerId,
-		bool esLocal,
-		string nombreJugador)
+	public void Configurar(int playerId, bool esLocal, string nombreJugador)
 	{
 		PlayerId = playerId;
 		EsLocal = esLocal;
@@ -66,7 +65,14 @@ public partial class Player : CharacterBody2D
 		nombre.Text = nombreJugador;
 		camera.Enabled = esLocal;
 	}
-
+	
+	public void LimpiarInputs(long lastSequenceProcessed)
+	{
+		while (inputsPendientes.Count > 0 && inputsPendientes.Peek().Sequence <= lastSequenceProcessed)
+		{
+			inputsPendientes.Dequeue();
+		}
+	}
 
 	// ---------- Snapshots ----------
 
@@ -80,9 +86,27 @@ public partial class Player : CharacterBody2D
 			hasTargetPosition = true;
 		}
 	}
-	public void AplicarEstadoRemoto(
-	Vector2 direction,
-	bool moving)
+	public void AplicarCorrecciónDePosicion(Vector2 posicionDelServer, long lastSequenceProcessed)
+	{
+		LimpiarInputs(lastSequenceProcessed);
+		Position = posicionDelServer;
+		foreach (PaqueteMovimiento input in inputsPendientes)
+		{
+			ReaplicarInput(input);
+		}
+	}
+	private void ReaplicarInput(PaqueteMovimiento movimiento)
+	{
+		Vector2 input = new(
+			movimiento.Input.X,
+			movimiento.Input.Y
+		);
+
+		Move(input);
+		MoveAndSlide();
+	}
+
+	public void AplicarEstadoRemoto(Vector2 direction, bool moving)
 	{
 		if (!moving)
 		{
@@ -259,6 +283,7 @@ public partial class Player : CharacterBody2D
 			Cliente.Instancia.Peer,
 			movimiento
 		);
+		inputsPendientes.Enqueue(movimiento);
 	}
 
 
@@ -269,7 +294,7 @@ public partial class Player : CharacterBody2D
 		if (EsLocal || !hasTargetPosition)
 			return;
 
-		float weight = 1.0f -Mathf.Exp(-RemoteInterpolationSpeed * (float)delta);
+		float weight = 1.0f - Mathf.Exp(-RemoteInterpolationSpeed * (float)delta);
 
 		Position = Position.Lerp(
 			targetPosition,

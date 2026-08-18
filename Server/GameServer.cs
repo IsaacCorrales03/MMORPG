@@ -6,6 +6,9 @@ public class GameServer
     public readonly World _mundo;
     private readonly NetworkServer _servidorRed;
 
+    /// <summary>Expone el servidor de red para consumo del dashboard / consola.</summary>
+    public NetworkServer Red => _servidorRed;
+
     public bool Running { get; private set; }
 
     private const double TickRate = 1.0 / 20.0;

@@ -26,7 +26,7 @@ namespace Client.Juego
         [Signal] public delegate void InicioSesionExitosoEventHandler();
         [Signal] public delegate void InicioSesionFallidoEventHandler(string mensaje);
         [Signal] public delegate void AparecerJugadorEventHandler();
-
+        [Signal] public delegate void CorregirMovimientoEventHandler(int playerId, long LastSequenceProcessed, Vector2 position);
         public string TokenSesion;
 
         public override void _Ready() => Instance = this;

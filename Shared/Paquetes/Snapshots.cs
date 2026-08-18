@@ -11,8 +11,10 @@ namespace Shared.Paquetes
 
         [Key(1)]
         public List<PlayerSnapshot> Players { get; set; } = new();
+
         [Key(2)]
-        public string Nombre { get; set; } = "";
+        public long LastSequenceProcessed { get; set; }
+
         [IgnoreMember]
         public TipoPaquete Tipo => TipoPaquete.Snapshot;
     }
