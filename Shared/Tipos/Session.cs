@@ -9,5 +9,6 @@ namespace Shared.Tipos
         public string NombreUsuario { get; init; } = "";
         public NetPeer? Peer { get; set; }
         public DateTime CreadaEn { get; init; }
+        public int ClaseId { get; set; }
     }
 }

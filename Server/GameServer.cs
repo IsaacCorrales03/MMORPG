@@ -2,6 +2,7 @@ using LiteNetLib;
 using Server.Managers;
 using Server.Mundo;
 using Server.Red;
+using Shared.Magia;
 
 public class GameServer
 {
@@ -33,6 +34,7 @@ public class GameServer
 
     public void Start()
     {
+
         if (Running)
             return;
 

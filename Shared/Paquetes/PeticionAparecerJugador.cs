@@ -13,6 +13,7 @@ namespace Shared.Paquetes
 
         [IgnoreMember]
         public TipoPaquete Tipo => TipoPaquete.PeticionAparecerJugador;
+        
 
     }
 }

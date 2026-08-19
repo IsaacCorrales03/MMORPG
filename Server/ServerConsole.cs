@@ -305,7 +305,7 @@ public static class ServerConsole
             bool statsDisponibles = stats != null;
 
             AnsiSetCursor(0, 0);
-
+            
             var lineas = new List<string>
             {
                 "================================",

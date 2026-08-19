@@ -7,5 +7,6 @@ namespace Server.DBEntities
         public string PasswordHash { get; set; } = "";
         public string Email { get; set; } = "";
         public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
+        public int ClaseId { get; set; }
     }
 }

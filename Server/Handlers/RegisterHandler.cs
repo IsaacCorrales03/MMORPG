@@ -37,6 +37,7 @@ namespace Server.Handlers
             Sesion sesion = SesionManager.CrearSesion(
                 jugador.Id,
                 jugador.NombreUsuario,
+                1,
                 peer
             );
 

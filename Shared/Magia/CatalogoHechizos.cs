@@ -1,158 +1,41 @@
 namespace Shared.Magia
 {
-    public static class CombinacionesRunas
+    public static class CatalogoHechizos
     {
+
+        public static readonly RunaElemental Fuego = new(
+            new List<Tecla>
+            {
+                Tecla.W,
+                Tecla.A,
+                Tecla.S
+            }
+        );
+
         public static readonly CombinacionTeclas IS = new(
-            new List<Tecla>
-            {
-                Tecla.A
-            },
-            new List<Tecla>
-            {
-                Tecla.A,
-                Tecla.D
-            },
-            new List<Tecla>
-            {
-                Tecla.A,
-                Tecla.D,
-                Tecla.S
-            }
+            new List<Tecla> { Tecla.A },
+            new List<Tecla> { Tecla.A, Tecla.D },
+            new List<Tecla> { Tecla.A, Tecla.D, Tecla.S }
         );
 
-        public static readonly CombinacionTeclas IA = new(
-            new List<Tecla>
-            {
-                Tecla.A,
-                Tecla.R
-            },
-            new List<Tecla>
-            {
-                Tecla.A,
-                Tecla.R,
-                Tecla.Q
-            },
-            new List<Tecla>
-            {
-                Tecla.A,
-                Tecla.R,
-                Tecla.Q,
-                Tecla.W
-            }
-        );
+        public static readonly CombinacionTeclas IA =
+            CombinacionTeclas.Concatenar(IS, Tecla.W);
 
-        public static readonly CombinacionTeclas ARA = new(
-            new List<Tecla>
-            {
-                Tecla.A,
-                Tecla.R,
-                Tecla.W
-            },
-            new List<Tecla>
-            {
-                Tecla.A,
-                Tecla.R,
-                Tecla.W,
-                Tecla.E
-            },
-            new List<Tecla>
-            {
-                Tecla.A,
-                Tecla.R,
-                Tecla.W,
-                Tecla.E,
-                Tecla.Q
-            }
-        );
+        public static readonly CombinacionTeclas ARA =
+            CombinacionTeclas.Concatenar(IA, Tecla.R);
 
-        public static readonly CombinacionTeclas ARAION = new(
-            new List<Tecla>
-            {
-                Tecla.A,
-                Tecla.R,
-                Tecla.W,
-                Tecla.E
-            },
-            new List<Tecla>
-            {
-                Tecla.A,
-                Tecla.R,
-                Tecla.W,
-                Tecla.E,
-                Tecla.Q
-            },
-            new List<Tecla>
-            {
-                Tecla.A,
-                Tecla.R,
-                Tecla.W,
-                Tecla.E,
-                Tecla.Q,
-                Tecla.S
-            }
-        );
+        public static readonly CombinacionTeclas ARAION =
+            CombinacionTeclas.Concatenar(ARA, Tecla.Q);
 
-        public static readonly CombinacionTeclas AERONIS = new(
-            new List<Tecla>
-            {
-                Tecla.A,
-                Tecla.R,
-                Tecla.W,
-                Tecla.E,
-                Tecla.Q
-            },
-            new List<Tecla>
-            {
-                Tecla.A,
-                Tecla.R,
-                Tecla.W,
-                Tecla.E,
-                Tecla.Q,
-                Tecla.S
-            },
-            new List<Tecla>
-            {
-                Tecla.A,
-                Tecla.R,
-                Tecla.W,
-                Tecla.E,
-                Tecla.Q,
-                Tecla.S,
-                Tecla.D
-            }
-        );
+        public static readonly CombinacionTeclas AERONIS =
+            CombinacionTeclas.Concatenar(ARAION, Tecla.S);
 
-        public static readonly CombinacionTeclas AERAVON = new(
-            new List<Tecla>
-            {
-                Tecla.A,
-                Tecla.R,
-                Tecla.W,
-                Tecla.E,
-                Tecla.Q,
-                Tecla.S
-            },
-            new List<Tecla>
-            {
-                Tecla.A,
-                Tecla.R,
-                Tecla.W,
-                Tecla.E,
-                Tecla.Q,
-                Tecla.S,
-                Tecla.D
-            },
-            new List<Tecla>
-            {
-                Tecla.A,
-                Tecla.R,
-                Tecla.W,
-                Tecla.E,
-                Tecla.Q,
-                Tecla.S,
-                Tecla.D,
-                Tecla.D
-            }
-        );
+        public static readonly CombinacionTeclas AERAVON =
+            CombinacionTeclas.Concatenar(AERONIS, Tecla.D);
+
+        public static readonly Hechizo Ignis = new("Ignis", 1, 10, new List<Elemento> { Elemento.Fuego}, Fuego,  IS);
+        public static readonly Hechizo Ignia = new("Ignia", 2, 20, new List<Elemento> {Elemento.Fuego}, Fuego, IA);
+        public static readonly Hechizo Ignara = new("Ignara", 3, 30, new List<Elemento> {Elemento.Fuego}, Fuego, ARA);
+        
     }
 }

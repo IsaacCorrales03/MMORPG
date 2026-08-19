@@ -10,7 +10,7 @@ namespace Server.Managers
         private static readonly ConcurrentDictionary<string, Sesion> _sesionesPorToken = new();
         private static readonly ConcurrentDictionary<int, string> _tokenPorUsuarioId = new();
         private static readonly ConcurrentDictionary<int, NetPeer> _peerPorUsuarioId = new();
-        public static Sesion CrearSesion(int UsuarioId, string NombreUsuario, NetPeer peer)
+        public static Sesion CrearSesion(int UsuarioId, string NombreUsuario,int claseId, NetPeer peer)
         {
             // Si el usuario ya tenía una sesión activa (login desde otro lado), la invalidamos primero
             if (_tokenPorUsuarioId.TryRemove(UsuarioId, out string? tokenViejo))
@@ -25,6 +25,7 @@ namespace Server.Managers
                 UsuarioId = UsuarioId,
                 NombreUsuario = NombreUsuario,
                 Peer = peer,
+                ClaseId = claseId,
                 CreadaEn = DateTime.UtcNow
             };
             _sesionesPorToken[token] = sesion;

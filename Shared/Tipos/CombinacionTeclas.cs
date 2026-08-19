@@ -12,5 +12,23 @@ namespace Shared.Magia
             Normal = normal;
             Compleja = compleja;
         }
+
+        public static CombinacionTeclas Concatenar(CombinacionTeclas anterior, Tecla nuevaTecla)
+        {
+            var simple = new List<Tecla>(anterior.Normal);
+
+            var normal = new List<Tecla>(anterior.Compleja);
+
+            var compleja = new List<Tecla>(anterior.Compleja)
+            {
+                nuevaTecla
+            };
+
+            return new CombinacionTeclas(
+                simple,
+                normal,
+                compleja
+            );
+        }
     }
 }

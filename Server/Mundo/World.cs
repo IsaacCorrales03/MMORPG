@@ -1,5 +1,6 @@
 using LiteNetLib;
 using Server.Managers;
+using Shared.Clases;
 using Shared.Paquetes;
 using Shared.Tipos;
 using Shared.Utils;
@@ -26,9 +27,9 @@ namespace Server.Mundo
         };
 
         // ---------- Gestión de jugadores ----------
-        public void AddPlayer(int playerId, Vector2 position, string nombre)
+        public void AddPlayer(int playerId, Vector2 position, string nombre, Clase clase)
         {
-            players[playerId] = new PlayerState(playerId, position, nombre);
+            players[playerId] = new PlayerState(playerId, position, nombre, clase);
             EventPool[playerId] = new List<IPaquete>();
             mapa.AddPlayer(playerId, players[playerId].chunkPosition);
         }

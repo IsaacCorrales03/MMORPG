@@ -19,7 +19,7 @@ namespace Shared.Magia
 
         public List<Hechizo> Hechizos { get; protected set; }
 
-        public Tomo( string nombre, Elemento afinidadElemental, Elemento incompatibilidadElemental)
+        public Tomo(string nombre, Elemento afinidadElemental, Elemento incompatibilidadElemental)
         {
             Nombre = nombre;
             AfinidadElemental = afinidadElemental;
@@ -29,6 +29,17 @@ namespace Shared.Magia
 
         public void AsignarHechizo(Hechizo hechizo)
         {
+            if (Hechizos.Count >= EspacioMaximo)
+                throw new InvalidOperationException("El tomo está lleno.");
+
+            if (hechizo.Elementos.Contains(IncompatibilidadElemental))
+            {
+                throw new InvalidOperationException(
+                    $"El hechizo {hechizo.Nombre} es incompatible con este tomo."
+                );
+            }
+
+            Hechizos.Add(hechizo);
         }
 
         public void RemoverHechizo(Hechizo hechizo)

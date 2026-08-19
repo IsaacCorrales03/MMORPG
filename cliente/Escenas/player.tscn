@@ -527,7 +527,7 @@ radius = 8.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_k6bia"]
 
-[node name="Player" type="CharacterBody2D" unique_id=1339410373 node_paths=PackedStringArray("sprite", "hurtbox", "nombre", "camera")]
+[node name="Player" type="CharacterBody2D" unique_id=1339410373 node_paths=PackedStringArray("sprite", "hurtbox", "nombre", "camera", "mago")]
 scale = Vector2(1.5, 1.5)
 motion_mode = 1
 script = ExtResource("1_qgqwx")
@@ -535,6 +535,7 @@ sprite = NodePath("Player")
 hurtbox = NodePath("HurtBox")
 nombre = NodePath("Etiqueta/Nombre")
 camera = NodePath("Camera2D")
+mago = NodePath("")
 metadata/_edit_lock_ = true
 
 [node name="Etiqueta" type="HBoxContainer" parent="." unique_id=760384587]

@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://ccm1p82gg7ok5"]
+
+[ext_resource type="Script" uid="uid://cd0515n7gyono" path="res://Clases/Mago/SlotHechizo.cs" id="1_ycvx7"]
+
+[node name="SlotHechizo" type="Control" unique_id=335081639 node_paths=PackedStringArray("_boton")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ycvx7")
+_boton = NodePath("Button")
+
+[node name="Button" type="Button" parent="." unique_id=948072899]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 8.0

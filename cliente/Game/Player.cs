@@ -14,8 +14,7 @@ public partial class Player : CharacterBody2D
 	[Export] public AnimatedSprite2D sprite;
 	[Export] public Area2D hurtbox;
 	[Export] public Label nombre;
-	[Export] public Camera2D camera;
-
+	[Export] public Camera2D camera;	
 	public CollisionShape2D hurtBoxShape;
 
 	private Vector2 lastDirection = Vector2.Down;
@@ -44,6 +43,7 @@ public partial class Player : CharacterBody2D
 
 	public override void _Ready()
 	{
+		CrearClase();	
 		isMultiplayerAuthority = IsMultiplayerAuthority();
 
 		sprite.AnimationFinished += OnAnimationFinished;
@@ -53,7 +53,15 @@ public partial class Player : CharacterBody2D
 		if (nombre == null)
 			nombre = GetNode<Label>("Etiqueta/Nombre");
 	}
+	private void CrearClase()
+	{
+		
+		PackedScene escenaMago = GD.Load<PackedScene>("res://Clases/Mago/Mago.tscn");
 
+		Mago mago = escenaMago.Instantiate<Mago>();
+
+		AddChild(mago);
+	}
 
 	// ---------- Configuración ----------
 
@@ -65,7 +73,7 @@ public partial class Player : CharacterBody2D
 		nombre.Text = nombreJugador;
 		camera.Enabled = esLocal;
 	}
-	
+
 	public void LimpiarInputs(long lastSequenceProcessed)
 	{
 		while (inputsPendientes.Count > 0 && inputsPendientes.Peek().Sequence <= lastSequenceProcessed)

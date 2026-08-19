@@ -1,6 +1,7 @@
 using LiteNetLib;
 using Server.Managers;
 using Server.Mundo;
+using Shared.Clases;
 using Shared.Paquetes;
 using Shared.Tipos;
 using Shared.Utils;
@@ -31,7 +32,8 @@ namespace Server.Handlers
                 respuesta.MensajeDeError = "No existe una sesión asociada.";
                 return;
             }
-            _world.AddPlayer(jugadorId, peticion.Position, session.NombreUsuario);
+            Clase clase = CatalogoClases.Crear(session.ClaseId);
+            _world.AddPlayer(jugadorId, peticion.Position, session.NombreUsuario, clase);
             respuesta.Exitoso = true;
             respuesta.Posicion = new Vector2(0,0);
             //acá podríamos obtener su ultima posicion del session manager
