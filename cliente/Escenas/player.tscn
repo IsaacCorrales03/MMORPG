@@ -529,6 +529,7 @@ radius = 8.0
 
 [node name="Player" type="CharacterBody2D" unique_id=1339410373 node_paths=PackedStringArray("sprite", "hurtbox", "nombre", "camera")]
 scale = Vector2(1.5, 1.5)
+motion_mode = 1
 script = ExtResource("1_qgqwx")
 sprite = NodePath("Player")
 hurtbox = NodePath("HurtBox")
@@ -571,9 +572,11 @@ script = ExtResource("4_6njrx")
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=2091364764]
 
 [node name="Hitbox" type="CollisionShape2D" parent="." unique_id=170474045]
+visible = false
 shape = SubResource("CapsuleShape2D_te065")
 
 [node name="HurtBox" type="Area2D" parent="." unique_id=1129600732 groups=["ataque"]]
+visible = false
 position = Vector2(0, -20)
 
 [node name="shape" type="CollisionShape2D" parent="HurtBox" unique_id=660077230]

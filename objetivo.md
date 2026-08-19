@@ -160,6 +160,8 @@ El combate funcionará tanto localmente como en multijugador.
 
 ---
 
+#
+
 ## 6. Vida, daño y muerte
 
 ### Objetivo general
@@ -259,5 +261,4 @@ El sistema de red dejará de estar diseñado específicamente alrededor de `Play
 
 
 ## Bugs Count:
-- Si dos jugadores chocan, uno puede transportar al otro
 - No deberían de poder existir dos clientes con el mismo id mandando ordenes
