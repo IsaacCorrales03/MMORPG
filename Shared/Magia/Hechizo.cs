@@ -5,20 +5,24 @@ namespace Shared.Magia
         public string Nombre { get; protected set; } = "";
         public int Nivel { get; protected set; }
         public int CostoMana { get; protected set; }
-
+        public string Descripcion { get; protected set; } = "";
         public List<Elemento> Elementos { get; protected set; }
 
         public RunaElemental Runa { get; protected set; }
         public CombinacionTeclas Combinacion { get; protected set; }
-
-        public Hechizo(string nombre, int nivel, int costoMana, List<Elemento> elementos, RunaElemental runa, CombinacionTeclas combinacion)
+        public float TiempoMinimo { get; protected set; }
+        public float TiempoMaximo { get; protected set; }
+        public Hechizo(string nombre, int nivel, int costoMana, string descripcion, List<Elemento> elementos, RunaElemental runa, CombinacionTeclas combinacion, float tiempoMinimo, float tiempoMaximo)
         {
             Nombre = nombre;
             Nivel = nivel;
             CostoMana = costoMana;
+            Descripcion = descripcion;
             Elementos = elementos;
             Runa = runa;
             Combinacion = combinacion;
+            TiempoMinimo = tiempoMinimo;
+            TiempoMaximo = tiempoMaximo;
         }
 
         public List<Tecla> ObtenerCombinacion(int nivelUsuario)

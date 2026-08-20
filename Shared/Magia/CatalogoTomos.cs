@@ -5,13 +5,15 @@ namespace Shared.Magia
         public static readonly Tomo Basico = new(
             "Tomo Básico",
             Elemento.Ninguno,
-            Elemento.Ninguno
+            Elemento.Ninguno,
+            1
         );
 
         public static readonly Tomo Infernal = new(
             "Tomo Infernal",
             Elemento.Fuego,
-            Elemento.Ninguno
+            Elemento.Ninguno,
+            2   
         );
     }
 }

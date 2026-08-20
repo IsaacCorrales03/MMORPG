@@ -1,151 +1,162 @@
 using Godot;
 using Shared.Magia;
+using System;
 using System.Collections.Generic;
 
 public partial class RuedaHechizos : Control
 {
-    [Export] private TomosManager _tomosManager;
-    [Export] private Control _contenedor;
-    [Export] private PackedScene _escenaSlot;
+    [Export] public PackedScene SlotHechizoScene;
+    [Export] public Control ContenedorSlots;
+    [Export] public Panel Centro;
+    [Export] public Label NombreHechizoLabel;
+    [Export] public Label ManaHechizoLabel;
+    [Export] public Label DescripcionHechizo;
 
-    [Export] private float _radio = 150f;
-    [Export] private float _anguloInicial = -90f;
+    public event Action<Hechizo> HechizoSeleccionado;
 
-    private Tomo _tomoActual;
-    private readonly List<SlotHechizo> _slots = new();
-    private int _indiceResaltado = -1;
+    private SlotHechizo _slotActivo;
+    private List<SlotHechizo> _slots = new();
+    private float _radio = 280f;
 
-    public override void _Ready()
+    private const float RadioInterior = 200f;
+    private const float RadioExterior = 430f;
+    private const int SegmentosArco = 24;
+
+    public void Abrir(Tomo tomo)
     {
-        GD.Print("Algo");
-        Visible = false;
-        _tomosManager.TomoCambiado += ActualizarTomo;
-        ActualizarTomo(_tomosManager.TomoActual);
-    }
+        LimpiarSlots();
+        int cantidad = tomo.EspacioMaximo;
+        Vector2 centro = Size / 2;
 
+        for (int i = 0; i < cantidad; i++)
+        {
+            var slotInstance = SlotHechizoScene.Instantiate<SlotHechizo>();
+            ContenedorSlots.AddChild(slotInstance);
+            slotInstance.SetAnchorsPreset(Control.LayoutPreset.TopLeft);
+            slotInstance.Size = new Vector2(120, 120);
+
+            float angulo = Mathf.Tau / cantidad * i - Mathf.Pi / 2;
+            Vector2 pos = centro + new Vector2(Mathf.Cos(angulo) * _radio, Mathf.Sin(angulo) * _radio);
+            slotInstance.Position = pos - slotInstance.Size / 2;
+
+            if (i < tomo.Hechizos.Count)
+                slotInstance.AsignarHechizo(tomo.Hechizos[i]);
+            else
+                slotInstance.SetNull();
+
+            _slots.Add(slotInstance);
+        }
+
+        Visible = true;
+        QueueRedraw();
+    }
     public override void _Process(double delta)
     {
         if (!Visible || _slots.Count == 0) return;
 
-        ActualizarResaltado();
-    }
+        Vector2 centro = Size / 2;
+        Vector2 mouseDir = GetLocalMousePosition() - centro;
 
-    public void AbrirRueda()
-    {
-        GD.Print("Abierto");
-        // Centra el contenedor en la posición del mouse al abrir
-        _contenedor.Position = GetLocalMousePosition() - _contenedor.Size / 2f;
+        SlotHechizo nuevoActivo = null;
 
-        Visible = true;
-    }
-
-    public void CerrarYConfirmar()
-    {
-        if (!Visible) return;
-
-        if (_indiceResaltado >= 0 && _indiceResaltado < _slots.Count)
+        if (mouseDir.Length() >= RadioInterior)
         {
-            Hechizo elegido = _slots[_indiceResaltado].Hechizo;
-            AlSeleccionarHechizo(elegido);
+            float anguloMouse = Mathf.Atan2(mouseDir.Y, mouseDir.X);
+            int cantidad = _slots.Count;
+            float pasoAngulo = Mathf.Tau / cantidad;
+            float anguloAjustado = anguloMouse + Mathf.Pi / 2;
+            if (anguloAjustado < 0) anguloAjustado += Mathf.Tau;
+
+            int indiceCercano = Mathf.RoundToInt(anguloAjustado / pasoAngulo) % cantidad;
+            var candidato = _slots[indiceCercano];
+            nuevoActivo = candidato.Hechizo != null ? candidato : null;
         }
 
-        _indiceResaltado = -1;
-        Visible = false;
+        if (nuevoActivo != _slotActivo)
+        {
+            _slotActivo = nuevoActivo;
+            ActualizarCentro(_slotActivo?.Hechizo);
+            QueueRedraw(); // el gajo activo cambió, hay que redibujar
+        }
     }
 
-    private void ActualizarResaltado()
+    public override void _Draw()
     {
-        Vector2 centro = _contenedor.GlobalPosition + _contenedor.Size / 2f;
-        Vector2 dirMouse = GetGlobalMousePosition() - centro;
+        if (!Visible || _slots.Count == 0) return;
 
-        // Si el mouse está muy cerca del centro, no hay selección (zona muerta)
-        if (dirMouse.Length() < 20f)
+        Vector2 centro = Size / 2;
+        int cantidad = _slots.Count;
+        float pasoAngulo = Mathf.Tau / cantidad;
+
+        for (int i = 0; i < cantidad; i++)
         {
-            SetIndiceResaltado(-1);
-            return;
-        }
+            float anguloInicio = pasoAngulo * i - Mathf.Pi / 2 - pasoAngulo / 2;
+            float anguloFin = anguloInicio + pasoAngulo;
 
-        float anguloMouse = Mathf.RadToDeg(dirMouse.Angle());
-        int total = _slots.Count;
-        float paso = 360f / total;
+            var puntos = new List<Vector2>();
 
-        int mejorIndice = 0;
-        float mejorDiferencia = float.MaxValue;
-
-        for (int i = 0; i < total; i++)
-        {
-            float anguloSlot = _anguloInicial + paso * i;
-            float diferencia = Mathf.Abs(Mathf.Wrap(anguloMouse - anguloSlot, -180f, 180f));
-
-            if (diferencia < mejorDiferencia)
+            for (int s = 0; s <= SegmentosArco; s++)
             {
-                mejorDiferencia = diferencia;
-                mejorIndice = i;
+                float t = Mathf.Lerp(anguloInicio, anguloFin, s / (float)SegmentosArco);
+                puntos.Add(centro + new Vector2(Mathf.Cos(t), Mathf.Sin(t)) * RadioExterior);
+            }
+            for (int s = SegmentosArco; s >= 0; s--)
+            {
+                float t = Mathf.Lerp(anguloInicio, anguloFin, s / (float)SegmentosArco);
+                puntos.Add(centro + new Vector2(Mathf.Cos(t), Mathf.Sin(t)) * RadioInterior);
+            }
+
+            bool tieneHechizo = _slots[i].Hechizo != null;
+            bool esActivo = _slots[i] == _slotActivo;
+
+            Color color = !tieneHechizo
+                ? new Color("#1B1611", 0.35f)
+                : esActivo
+                    ? new Color("#D4A24C", 0.55f)
+                    : new Color("#1B1611", 0.8f);
+
+            var arr = puntos.ToArray();
+            DrawColoredPolygon(arr, color);
+
+            for (int p = 0; p < arr.Length; p++)
+            {
+                Vector2 a = arr[p];
+                Vector2 b = arr[(p + 1) % arr.Length];
+                DrawLine(a, b, new Color("#5C4B33"), 1.5f);
             }
         }
-
-        SetIndiceResaltado(mejorIndice);
     }
 
-    private void SetIndiceResaltado(int indice)
+    private void ActualizarCentro(Hechizo hechizo)
     {
-        if (_indiceResaltado == indice) return;
-
-        if (_indiceResaltado >= 0 && _indiceResaltado < _slots.Count)
-            _slots[_indiceResaltado].SetResaltado(false);
-
-        _indiceResaltado = indice;
-
-        if (_indiceResaltado >= 0 && _indiceResaltado < _slots.Count)
-            _slots[_indiceResaltado].SetResaltado(true);
+        NombreHechizoLabel.Text = hechizo?.Nombre ?? "";
+        ManaHechizoLabel.Text = hechizo?.CostoMana.ToString() ?? "";
+        DescripcionHechizo.Text = hechizo?.Descripcion ?? "";
     }
-
-    private void ActualizarTomo(Tomo tomo)
+    public void LimpiarCentro()
     {
-        _tomoActual = tomo;
-        LimpiarSlots();
-        CrearSlots();
+        NombreHechizoLabel.Text = "";
+        ManaHechizoLabel.Text = "";
+        DescripcionHechizo.Text = "";   
     }
 
     private void LimpiarSlots()
     {
-        foreach (Node hijo in _contenedor.GetChildren())
-            hijo.QueueFree();
-
+        foreach (var slot in _slots)
+            slot.QueueFree();
         _slots.Clear();
+        
     }
 
-    private void CrearSlots()
+    public void Cerrar()
     {
-        int total = _tomoActual.Hechizos.Count;
-        if (total == 0) return;
+        if (_slotActivo != null)
+            HechizoSeleccionado?.Invoke(_slotActivo.Hechizo);
 
-        float paso = 360f / total;
-
-        for (int i = 0; i < total; i++)
-        {
-            Hechizo hechizo = _tomoActual.Hechizos[i];
-
-            SlotHechizo slot = _escenaSlot.Instantiate<SlotHechizo>();
-            _contenedor.AddChild(slot);
-            slot.AsignarHechizo(hechizo);
-            _slots.Add(slot);
-
-            float anguloRad = Mathf.DegToRad(_anguloInicial + paso * i);
-            Vector2 offset = new Vector2(Mathf.Cos(anguloRad), Mathf.Sin(anguloRad)) * _radio;
-
-            Vector2 centro = _contenedor.Size / 2f;
-            Vector2 tamanoSlot = slot.CustomMinimumSize != Vector2.Zero
-                ? slot.CustomMinimumSize
-                : new Vector2(64, 64);
-
-            slot.Position = centro + offset - tamanoSlot / 2f;
-        }
-    }
-
-    private void AlSeleccionarHechizo(Hechizo hechizo)
-    {
-        GD.Print($"Hechizo confirmado: {hechizo.Nombre}");
-        // Acá disparás el cast real
+        Visible = false;
+        LimpiarSlots();
+        _slotActivo = null;
+        LimpiarCentro();
+        QueueRedraw();
     }
 }

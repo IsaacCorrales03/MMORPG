@@ -1,18 +1,43 @@
 [gd_scene format=3 uid="uid://ccm1p82gg7ok5"]
 
 [ext_resource type="Script" uid="uid://cd0515n7gyono" path="res://Clases/Mago/SlotHechizo.cs" id="1_ycvx7"]
+[ext_resource type="FontFile" uid="uid://ckukl3m3uu83o" path="res://Assets/Fonts/JetBrainsMono-Regular.ttf" id="2_khcvv"]
 
-[node name="SlotHechizo" type="Control" unique_id=335081639 node_paths=PackedStringArray("_boton")]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ycvx7"]
+
+[node name="SlotHechizo" type="Control" unique_id=335081639 node_paths=PackedStringArray("_panel", "_nombre")]
+custom_minimum_size = Vector2(150, 150)
+custom_maximum_size = Vector2(150, 150)
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 script = ExtResource("1_ycvx7")
-_boton = NodePath("Button")
+_panel = NodePath("Panel")
+_nombre = NodePath("Panel/Nombre")
 
-[node name="Button" type="Button" parent="." unique_id=948072899]
+[node name="Panel" type="Panel" parent="." unique_id=543152008]
 layout_mode = 0
-offset_right = 8.0
-offset_bottom = 8.0
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_styles/panel = SubResource("StyleBoxEmpty_ycvx7")
+
+[node name="Nombre" type="Label" parent="Panel" unique_id=1569445294]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(60, 60)
+theme_override_colors/font_color = Color(0.92941177, 0.89411765, 0.827451, 1)
+theme_override_colors/font_outline_color = Color(0.043137256, 0.05490196, 0.078431375, 1)
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("2_khcvv")
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
+vertical_alignment = 1

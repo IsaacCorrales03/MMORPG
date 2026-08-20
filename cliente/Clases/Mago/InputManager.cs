@@ -1,16 +1,19 @@
 using Godot;
+using Shared.Magia;
 
 public partial class InputManager : Node
 {
     [Export] private TomosManager _tomosManager;
     [Export] private RuedaHechizos _ruedaHechizos;
-
+    private int _motionEventsRecibidos = 0;
     public override void _Ready()
     {
-        GD.Print("Alog");
+        _ruedaHechizos.HechizoSeleccionado += OnHechizoSeleccionado;
     }
-    public override void _UnhandledInput(InputEvent @event)
+
+    public override void _Input(InputEvent @event)
     {
+
         if (@event is InputEventKey keyEvent &&
             keyEvent.Pressed &&
             keyEvent.Keycode == Key.Q)
@@ -22,15 +25,24 @@ public partial class InputManager : Node
             mouseEvent.ButtonIndex == MouseButton.Left)
         {
             if (mouseEvent.Pressed)
-                _ruedaHechizos?.AbrirRueda();
+            {
+                _ruedaHechizos?.Abrir(_tomosManager.TomoActual);
+            }
             else
-                _ruedaHechizos?.CerrarYConfirmar();
+            {
+                _ruedaHechizos?.Cerrar();
+            }
         }
     }
+
 
     private void CambiarTomo()
     {
         int siguienteTomo = _tomosManager.TomoSeleccionado == 1 ? 2 : 1;
         _tomosManager.SeleccionarTomo(siguienteTomo);
+    }
+    private void OnHechizoSeleccionado(Hechizo hechizo)
+    {
+        GD.Print($"Seleccionaste: {hechizo.Nombre}");
     }
 }

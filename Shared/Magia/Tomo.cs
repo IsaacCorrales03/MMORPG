@@ -19,12 +19,13 @@ namespace Shared.Magia
 
         public List<Hechizo> Hechizos { get; protected set; }
 
-        public Tomo(string nombre, Elemento afinidadElemental, Elemento incompatibilidadElemental)
+        public Tomo(string nombre, Elemento afinidadElemental, Elemento incompatibilidadElemental, int nivel)
         {
             Nombre = nombre;
             AfinidadElemental = afinidadElemental;
             IncompatibilidadElemental = incompatibilidadElemental;
             Hechizos = new List<Hechizo>();
+            Nivel = nivel;
         }
 
         public void AsignarHechizo(Hechizo hechizo)
@@ -52,6 +53,18 @@ namespace Shared.Magia
 
         public void SubirNivel()
         {
+        }
+        public Tomo Clonar()
+        {
+            var copia = new Tomo(Nombre, AfinidadElemental, IncompatibilidadElemental, Nivel);
+            copia.Hechizos.AddRange(Hechizos);
+            return copia;
+        }
+
+        // Método de apoyo, ya que Nivel es protected set y el constructor no lo recibe
+        protected void SetNivel(int nivel)
+        {
+            Nivel = nivel;
         }
     }
 }
