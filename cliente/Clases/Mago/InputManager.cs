@@ -5,6 +5,7 @@ public partial class InputManager : Node
 {
     [Export] private TomosManager _tomosManager;
     [Export] private RuedaHechizos _ruedaHechizos;
+    [Export] private SistemaCasteo _sistemaCasteo;
     private int _motionEventsRecibidos = 0;
     public override void _Ready()
     {
@@ -13,6 +14,9 @@ public partial class InputManager : Node
 
     public override void _Input(InputEvent @event)
     {
+        if (_sistemaCasteo != null && _sistemaCasteo.BloqueaOtrosInputs)
+            return; // nada se procesa mientras castea: ni Q, ni click de rueda
+
 
         if (@event is InputEventKey keyEvent &&
             keyEvent.Pressed &&
@@ -43,6 +47,7 @@ public partial class InputManager : Node
     }
     private void OnHechizoSeleccionado(Hechizo hechizo)
     {
-        GD.Print($"Seleccionaste: {hechizo.Nombre}");
+        if (hechizo == null) return;
+       _sistemaCasteo.IniciarCasteo(hechizo, 6);
     }
 }

@@ -112,7 +112,7 @@ namespace Shared.Magia
         public static readonly Hechizo Ignis =
             new("Ignis", 1, 10,
                 "Una pequeña llama nacida de la esencia elemental del fuego.",
-                new List<Elemento> { Elemento.Fuego }, Fuego, IS, 1f, 2f);
+                new List<Elemento> { Elemento.Fuego }, Fuego, IS, 2f, 4f);
 
         public static readonly Hechizo Ignia =
             new("Ignia", 2, 20,

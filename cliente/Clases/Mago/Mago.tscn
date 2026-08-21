@@ -5,7 +5,10 @@
 [ext_resource type="Script" uid="uid://cycoi8ypvt6xg" path="res://Clases/Mago/InputManager.cs" id="3_lrpg4"]
 [ext_resource type="Script" uid="uid://bx4jbq7lyiu6q" path="res://Clases/Mago/RuedaHechizos.cs" id="3_nw5lj"]
 [ext_resource type="PackedScene" uid="uid://ccm1p82gg7ok5" path="res://Clases/Mago/SlotHechizo.tscn" id="4_8lw82"]
+[ext_resource type="Script" uid="uid://crgxi7vpjwbrp" path="res://Clases/Mago/SistemaCasteo.cs" id="4_wt4u5"]
 [ext_resource type="FontFile" uid="uid://b4rpr5o6xy55n" path="res://Assets/Fonts/Inter_18pt-Regular.ttf" id="6_lrpg4"]
+[ext_resource type="Script" uid="uid://c0fc4cb53ek0s" path="res://Clases/Mago/CasteoUI.cs" id="8_bo8fo"]
+[ext_resource type="PackedScene" uid="uid://d1hou2sgbekuw" path="res://Clases/Mago/tecla_visual.tscn" id="9_x4bp2"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nw5lj"]
 bg_color = Color(0.043137256, 0.05490196, 0.078431375, 0.8745098)
@@ -20,21 +23,38 @@ corner_radius_bottom_right = 200
 corner_radius_bottom_left = 200
 corner_detail = 20
 
-[node name="Mago" type="Node2D" unique_id=858807980 node_paths=PackedStringArray("_tomoManager")]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_casteo"]
+bg_color = Color(0.043137256, 0.05490196, 0.078431375, 0.8745098)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.83137256, 0.63529414, 0.29803923, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[node name="Mago" type="Node2D" node_paths=PackedStringArray("_tomoManager", "_sistemaCasteo")]
 script = ExtResource("1_db3x0")
 _tomoManager = NodePath("TomosManager")
+_sistemaCasteo = NodePath("SistemaCasteo")
 
-[node name="TomosManager" type="Node" parent="." unique_id=1380630540]
+[node name="TomosManager" type="Node" parent="."]
 script = ExtResource("2_8lw82")
 
-[node name="InputManager" type="Node" parent="." unique_id=1004975364 node_paths=PackedStringArray("_tomosManager", "_ruedaHechizos")]
+[node name="InputManager" type="Node" parent="." node_paths=PackedStringArray("_tomosManager", "_ruedaHechizos", "_sistemaCasteo")]
 script = ExtResource("3_lrpg4")
 _tomosManager = NodePath("../TomosManager")
 _ruedaHechizos = NodePath("../UI/RuedaHechizos")
+_sistemaCasteo = NodePath("../SistemaCasteo")
 
-[node name="UI" type="CanvasLayer" parent="." unique_id=1873143043]
+[node name="SistemaCasteo" type="Node" parent="."]
+script = ExtResource("4_wt4u5")
 
-[node name="RuedaHechizos" type="Control" parent="UI" unique_id=774974692 node_paths=PackedStringArray("ContenedorSlots", "Centro", "NombreHechizoLabel", "ManaHechizoLabel", "DescripcionHechizo")]
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="RuedaHechizos" type="Control" parent="UI" node_paths=PackedStringArray("ContenedorSlots", "Centro", "NombreHechizoLabel", "ManaHechizoLabel", "DescripcionHechizo", "DuracionHechizoLabel")]
 visible = false
 layout_mode = 3
 anchors_preset = 15
@@ -47,10 +67,11 @@ SlotHechizoScene = ExtResource("4_8lw82")
 ContenedorSlots = NodePath("ContenedorSlots")
 Centro = NodePath("Centro")
 NombreHechizoLabel = NodePath("Centro/ContenedorCentro/NombreHechizo")
-ManaHechizoLabel = NodePath("Centro/ContenedorCentro/ManaHechizo")
+ManaHechizoLabel = NodePath("Centro/ContenedorCentro/FilaStats/ManaHechizo")
 DescripcionHechizo = NodePath("Centro/Descripcion")
+DuracionHechizoLabel = NodePath("Centro/ContenedorCentro/FilaStats/DuracionHechizo")
 
-[node name="Centro" type="Panel" parent="UI/RuedaHechizos" unique_id=2036907873]
+[node name="Centro" type="Panel" parent="UI/RuedaHechizos"]
 custom_minimum_size = Vector2(400, 400)
 custom_maximum_size = Vector2(400, 400)
 layout_mode = 1
@@ -59,63 +80,135 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -100.0
-offset_top = -100.0
-offset_right = 100.0
-offset_bottom = 100.0
+offset_left = -200.0
+offset_top = -200.0
+offset_right = 200.0
+offset_bottom = 200.0
 grow_horizontal = 2
 grow_vertical = 2
 offset_transform_enabled = true
 theme_override_styles/panel = SubResource("StyleBoxFlat_nw5lj")
 
-[node name="ContenedorCentro" type="VBoxContainer" parent="UI/RuedaHechizos/Centro" unique_id=463165070]
-custom_minimum_size = Vector2(0, 100)
+[node name="ContenedorCentro" type="VBoxContainer" parent="UI/RuedaHechizos/Centro"]
 layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_bottom = 100.0
-grow_horizontal = 2
-alignment = 1
-
-[node name="NombreHechizo" type="Label" parent="UI/RuedaHechizos/Centro/ContenedorCentro" unique_id=1686098488]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.9098039, 0.50980395, 0.23529412, 1)
-theme_override_font_sizes/font_size = 28
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="ManaHechizo" type="Label" parent="UI/RuedaHechizos/Centro/ContenedorCentro" unique_id=1386599145]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.29803923, 0.62352943, 0.83137256, 1)
-theme_override_font_sizes/font_size = 24
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Descripcion" type="Label" parent="UI/RuedaHechizos/Centro" unique_id=141014630]
-custom_minimum_size = Vector2(300, 100)
-custom_maximum_size = Vector2(350, 200)
-clip_contents = true
-layout_mode = 1
-anchors_preset = 8
+anchors_preset = -1
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -170.0
-offset_top = -70.5
-offset_right = 180.0
-offset_bottom = 129.5
+offset_left = -130.0
+offset_top = -140.0
+offset_right = 130.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+theme_override_constants/separation = 6
+
+[node name="NombreHechizo" type="Label" parent="UI/RuedaHechizos/Centro/ContenedorCentro"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9098039, 0.50980395, 0.23529412, 1)
+theme_override_font_sizes/font_size = 30
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="Separador" type="HSeparator" parent="UI/RuedaHechizos/Centro/ContenedorCentro"]
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="FilaStats" type="HBoxContainer" parent="UI/RuedaHechizos/Centro/ContenedorCentro"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 14
+
+[node name="ManaHechizo" type="Label" parent="UI/RuedaHechizos/Centro/ContenedorCentro/FilaStats"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.29803923, 0.62352943, 0.83137256, 1)
+theme_override_font_sizes/font_size = 22
+horizontal_alignment = 1
+
+[node name="DuracionHechizo" type="Label" parent="UI/RuedaHechizos/Centro/ContenedorCentro/FilaStats"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6784314, 0.6784314, 0.7019608, 1)
+theme_override_font_sizes/font_size = 22
+horizontal_alignment = 1
+
+[node name="Descripcion" type="Label" parent="UI/RuedaHechizos/Centro"]
+clip_contents = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -140.0
+offset_top = -10.0
+offset_right = 140.0
+offset_bottom = 150.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_fonts/font = ExtResource("6_lrpg4")
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 24
 horizontal_alignment = 1
+vertical_alignment = 0
 autowrap_mode = 3
 
-[node name="ContenedorSlots" type="Control" parent="UI/RuedaHechizos" unique_id=1683076518]
+[node name="ContenedorSlots" type="Control" parent="UI/RuedaHechizos"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="CasteoUi" type="Control" par    ent="UI" node_paths=PackedStringArray("SistemaCasteo", "ContenedorTeclas", "BarraTiempo", "PanelContenedor", "LabelConcentrando")]
+layout_mode = 3
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+script = ExtResource("8_bo8fo")
+SistemaCasteo = NodePath("../../SistemaCasteo")
+TeclaVisualScene = ExtResource("9_x4bp2")
+ContenedorTeclas = NodePath("Panel/Margen/Contenido/ContenedorTeclas")
+BarraTiempo = NodePath("Panel/Margen/Contenido/BarraTiempo")
+PanelContenedor = NodePath("Panel")
+LabelConcentrando = NodePath("Panel/Margen/Contenido/LabelConcentrando")
+
+[node name="Panel" type="PanelContainer" parent="UI/CasteoUi"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_casteo")
+
+[node name="Margen" type="MarginContainer" parent="UI/CasteoUi/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 12
+
+[node name="Contenido" type="VBoxContainer" parent="UI/CasteoUi/Panel/Margen"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="BarraTiempo" type="ProgressBar" parent="UI/CasteoUi/Panel/Margen/Contenido"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+show_percentage = false
+
+[node name="ContenedorTeclas" type="HBoxContainer" parent="UI/CasteoUi/Panel/Margen/Contenido"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="LabelConcentrando" type="Label" parent="UI/CasteoUi/Panel/Margen/Contenido"]
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.9098039, 0.50980395, 0.23529412, 1)
+horizontal_alignment = 1
+text = "Concentrando maná..."

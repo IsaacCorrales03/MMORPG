@@ -8,13 +8,20 @@ using System.Collections.Generic;
 public partial class Player : CharacterBody2D
 {
 	public const float MoveSpeed = 200.0f;
+	private readonly HashSet<object> _bloqueadoresMovimiento = new();
+
+	public bool MovimientoBloqueado => _bloqueadoresMovimiento.Count > 0;
+
+	public void BloquearMovimiento(object solicitante) => _bloqueadoresMovimiento.Add(solicitante);
+	public void DesbloquearMovimiento(object solicitante) => _bloqueadoresMovimiento.Remove(solicitante);
+
 
 	private long sequence = 0;
 
 	[Export] public AnimatedSprite2D sprite;
 	[Export] public Area2D hurtbox;
 	[Export] public Label nombre;
-	[Export] public Camera2D camera;	
+	[Export] public Camera2D camera;
 	public CollisionShape2D hurtBoxShape;
 
 	private Vector2 lastDirection = Vector2.Down;
@@ -43,7 +50,7 @@ public partial class Player : CharacterBody2D
 
 	public override void _Ready()
 	{
-		CrearClase();	
+		CrearClase();
 		isMultiplayerAuthority = IsMultiplayerAuthority();
 
 		sprite.AnimationFinished += OnAnimationFinished;
@@ -55,7 +62,7 @@ public partial class Player : CharacterBody2D
 	}
 	private void CrearClase()
 	{
-		
+
 		PackedScene escenaMago = GD.Load<PackedScene>("res://Clases/Mago/Mago.tscn");
 
 		Mago mago = escenaMago.Instantiate<Mago>();
@@ -245,7 +252,12 @@ public partial class Player : CharacterBody2D
 		// Los jugadores remotos NO ejecutan movimiento local.
 		if (!EsLocal)
 			return;
-
+		if (MovimientoBloqueado)
+		{
+			Velocity = Vector2.Zero;
+			MoveAndSlide();
+			return;
+		}
 		sequence++;
 
 		Vector2 direction = GetInputDirection();

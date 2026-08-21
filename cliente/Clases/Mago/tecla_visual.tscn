@@ -1,0 +1,47 @@
+[gd_scene format=3 uid="uid://d1hou2sgbekuw"]
+
+[ext_resource type="Script" uid="uid://dcw2ndb6fit6w" path="res://Clases/Mago/TeclaVisual.cs" id="1_hf72u"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pendiente"]
+bg_color = Color(0.10588235, 0.08627451, 0.06666667, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.36078432, 0.29411766, 0.2, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="TeclaVisual" type="Control" unique_id=1204847020 node_paths=PackedStringArray("_letra", "_panel")]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_hf72u")
+_letra = NodePath("Letra")
+_panel = NodePath("Panel")
+
+[node name="Panel" type="Panel" parent="." unique_id=1842386320]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_pendiente")
+
+[node name="Letra" type="Label" parent="." unique_id=669764656]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 26
+horizontal_alignment = 1
+vertical_alignment = 1

@@ -11,6 +11,8 @@ public partial class RuedaHechizos : Control
     [Export] public Label NombreHechizoLabel;
     [Export] public Label ManaHechizoLabel;
     [Export] public Label DescripcionHechizo;
+    [Export] public Label DuracionHechizoLabel; // agregar junto a los otros exports
+
 
     public event Action<Hechizo> HechizoSeleccionado;
 
@@ -132,12 +134,17 @@ public partial class RuedaHechizos : Control
         NombreHechizoLabel.Text = hechizo?.Nombre ?? "";
         ManaHechizoLabel.Text = hechizo?.CostoMana.ToString() ?? "";
         DescripcionHechizo.Text = hechizo?.Descripcion ?? "";
+
+        if (hechizo != null)
+            DuracionHechizoLabel.Text = $"{hechizo.TiempoMinimo:0.0}s – {hechizo.TiempoMaximo:0.0}s";
+        else
+            DuracionHechizoLabel.Text = "";
     }
     public void LimpiarCentro()
     {
         NombreHechizoLabel.Text = "";
         ManaHechizoLabel.Text = "";
-        DescripcionHechizo.Text = "";   
+        DescripcionHechizo.Text = "";
     }
 
     private void LimpiarSlots()
@@ -145,7 +152,7 @@ public partial class RuedaHechizos : Control
         foreach (var slot in _slots)
             slot.QueueFree();
         _slots.Clear();
-        
+
     }
 
     public void Cerrar()
