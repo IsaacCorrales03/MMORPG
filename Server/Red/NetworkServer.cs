@@ -1,4 +1,5 @@
 using LiteNetLib;
+using Server.Managers;
 using Server.Mundo;
 using Shared.Paquetes;
 using Shared.Utils;
@@ -15,7 +16,8 @@ namespace Server.Red
         public int MaximoJugadores { get; }
         public int Puerto { get; }
         public event Action<NetPeer>? JugadorDesconectado;
-        private PacketRouter _router; 
+        public IEnumerable<NetPeer> Peers => _server ?? Enumerable.Empty<NetPeer>();
+        private PacketRouter _router;
         // Dependencias del servidor
         // dependencia de router y packet sender
 
@@ -51,7 +53,7 @@ namespace Server.Red
 
             // Al recibir datos e información desde la red
             _listener.NetworkReceiveEvent += (peer, reader, channel, deliveryMethod) => OnNetworkReceive(peer, reader, channel, deliveryMethod);
-            
+
             // Nueva instancia del servidor netlib:
             _server = new(_listener)
             {
@@ -89,23 +91,23 @@ namespace Server.Red
             {
                 throw new Exception("El servidor no está inicializado");
             }
-            
+
         }
 
         private void OnPeerConnected(NetPeer peer)
         {
-            ServerConsole.Log($"+ Cliente conectado: {peer.Address} (id interno: {peer.Id})");
+            ServerLog.Log($"+ Cliente conectado: {peer.Address} (id interno: {peer.Id})");
         }
 
         private void OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectionInfo)
         {
             JugadorDesconectado?.Invoke(peer);
-            ServerConsole.Log($"- Cliente desconectado: {peer.Address} (id interno: {peer.Id}), razón: {disconnectionInfo.Reason}");
+            ServerLog.Log($"- Cliente desconectado: {peer.Address} (id interno: {peer.Id}), razón: {disconnectionInfo.Reason}");
         }
 
         private void OnConnectionRequest(ConnectionRequest request)
         {
-            if ( _server != null && _server.ConnectedPeersCount < MaximoJugadores)
+            if (_server != null && _server.ConnectedPeersCount < MaximoJugadores)
             {
                 // Acepta si tiene la clave
                 request.AcceptIfKey(Claves.ClaveServidor);
@@ -126,7 +128,7 @@ namespace Server.Red
             }
             catch (Exception ex)
             {
-                ServerConsole.Log($"Error procesando paquete de {peer.Address}: {ex.Message}");
+                ServerLog.Log($"Error procesando paquete de {peer.Address}: {ex.Message}");
             }
             finally
             {

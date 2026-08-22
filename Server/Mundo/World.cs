@@ -15,7 +15,8 @@ namespace Server.Mundo
         private long _currentTick = 0;
 
         const float ClientPhysicsDelta = 1f / 60f;
-
+  
+        public long CurrentTick => _currentTick;
         // ---------- Campos ----------
         public readonly SpatialGrid mapa = new();
         public readonly Dictionary<int, PlayerState> players = new();
@@ -73,7 +74,7 @@ namespace Server.Mundo
         {
             return _tiposDeEventos.Contains(tipo);
         }
-        
+
         private PlayerSnapshot BuildSnapshot(PlayerState player)
         {
             return new PlayerSnapshot

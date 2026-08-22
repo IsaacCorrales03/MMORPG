@@ -8,8 +8,8 @@ using Shared.Utils;
 
 namespace Server.Handlers
 {
-    
-    public class AparecerJugadorHandler: IPacketHandler
+
+    public class AparecerJugadorHandler : IPacketHandler
     {
         private readonly World _world;
 
@@ -30,15 +30,15 @@ namespace Server.Handlers
             {
                 respuesta.Exitoso = false;
                 respuesta.MensajeDeError = "No existe una sesión asociada.";
+                ServerLog.Log($"⚠ AparecerJugador rechazado: sin sesión asociada (peer {peer.Id})");
+                PacketSender.EnviarOrdenado(peer, respuesta); // faltaba enviar en este caso también
                 return;
             }
             Clase clase = CatalogoClases.Crear(session.ClaseId);
             _world.AddPlayer(jugadorId, peticion.Position, session.NombreUsuario, clase);
             respuesta.Exitoso = true;
-            respuesta.Posicion = new Vector2(0,0);
-            //acá podríamos obtener su ultima posicion del session manager
-            // luego añadirlo, y luego enviar una respuesta "Aparece" para
-            // que el juego pueda saber donde aparecerlo 
+            respuesta.Posicion = new Vector2(0, 0);
+            ServerLog.Log($"✓ Jugador '{session.NombreUsuario}' (id {jugadorId}) apareció en el mundo");
             PacketSender.EnviarOrdenado(peer, respuesta);
         }
     }

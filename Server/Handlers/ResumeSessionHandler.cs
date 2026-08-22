@@ -29,15 +29,16 @@ namespace Server.Handlers
             {
                 respuesta.Exitoso = false;
                 respuesta.MensajeError = "Sesión inválida o expirada";
+                ServerLog.Log($"⚠ Intento de reanudar sesión inválido/expirado (peer {peer.Id})");
                 PacketSender.EnviarOrdenado(peer, respuesta);
                 return;
             }
             respuesta.Exitoso = true;
             respuesta.NombreUsuario = sesion.NombreUsuario;
             respuesta.IdUsuario = sesion.UsuarioId;
-            respuesta.Token = sesion.Token; 
+            respuesta.Token = sesion.Token;
+            ServerLog.Log($"✓ Sesión reanudada: '{sesion.NombreUsuario}'");
             PacketSender.EnviarOrdenado(peer, respuesta);
-
         }
     }
 }

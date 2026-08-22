@@ -6,6 +6,35 @@ using Shared.Magia;
 
 public class GameServer
 {
+    public record PlayerMonitorInfo(
+        int PlayerId,
+        string Nombre,
+        float PosX,
+        float PosY,
+        bool Moving,
+        int PingMs
+    );
+
+    public IEnumerable<PlayerMonitorInfo> GetPlayerSnapshotForMonitor()
+    {
+        foreach (var peer in _servidorRed.Peers)
+        {
+            int? id = SesionManager.ObtenerIdPorPeer(peer);
+            if (id is null) continue;
+
+            var player = _mundo.GetPlayer(id.Value);
+            if (player is null) continue;
+
+            yield return new PlayerMonitorInfo(
+                player.PlayerId,
+                player.Nombre,
+                player.Position.X,
+                player.Position.Y,
+                player.IsMoving,
+                peer.Ping
+            );
+        }
+    }
     public readonly World _mundo;
     private readonly NetworkServer _servidorRed;
 
@@ -13,7 +42,9 @@ public class GameServer
     public NetworkServer Red => _servidorRed;
 
     public bool Running { get; private set; }
-
+    private int _ticksThisSecond = 0;
+    private double _tpsTimer = 0;
+    public int CurrentTps { get; private set; }
     private const double TickRate = 1.0 / 20.0;
     private double _tickAccumulator;
 
@@ -29,7 +60,7 @@ public class GameServer
         if (id.HasValue)
         {
             _mundo.RemovePlayer(id.Value);
-        }    
+        }
     }
 
     public void Start()
@@ -58,13 +89,20 @@ public class GameServer
 
         _servidorRed.PollEvents();
         _tickAccumulator += delta;
+        _tpsTimer += delta;
 
         while (_tickAccumulator >= TickRate)
         {
             _mundo.Tick();
-
+            _ticksThisSecond++;
             _tickAccumulator -= TickRate;
-            
+        }
+
+        if (_tpsTimer >= 1.0)
+        {
+            CurrentTps = _ticksThisSecond;
+            _ticksThisSecond = 0;
+            _tpsTimer -= 1.0;
         }
     }
 }

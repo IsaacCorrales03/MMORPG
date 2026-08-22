@@ -10,14 +10,19 @@ public partial class CasteoUI : Control
     [Export] public ProgressBar BarraTiempo;
     [Export] public PanelContainer PanelContenedor;
     [Export] public Label LabelConcentrando;
+    [Export] public ColorRect Overlay;
 
     private const float MargenInferior = 60f;
+    private const float DuracionOverlay = 0.18f;
+
     private bool _enEsperaMinima = false;
     private List<TeclaVisual> _teclasVisuales = new();
 
     private StyleBoxFlat _fillDefault;
     private StyleBoxFlat _fillConcentrando;
     private StyleBoxFlat _bgConcentrando;
+
+    private Tween _tweenOverlay;
 
     public override void _Ready()
     {
@@ -33,13 +38,35 @@ public partial class CasteoUI : Control
         _fillConcentrando = new StyleBoxFlat { BgColor = new Color("#E0C23C") }; // amarillo
         _bgConcentrando = new StyleBoxFlat { BgColor = new Color("#4A4A4A") };   // gris
 
+        if (Overlay == null)
+        {
+            GD.PushWarning("CasteoUI: Overlay no está asignado en el inspector.");
+        }
+        else
+        {
+            var c = Overlay.Color;
+            c.A = 0f;
+            Overlay.Color = c;
+        }
+
         Visible = false;
+    }
+
+    private void MostrarOverlay(bool mostrar)
+    {
+        if (Overlay == null) return;
+
+        _tweenOverlay?.Kill();
+        _tweenOverlay = CreateTween();
+        float alphaObjetivo = mostrar ? 0.45f : 0f;
+        _tweenOverlay.TweenProperty(Overlay, "color:a", alphaObjetivo, DuracionOverlay);
     }
 
     private void OnCasteoIniciado(Hechizo hechizo, IReadOnlyList<Tecla> secuencia)
     {
         _enEsperaMinima = false;
         MostrarParaHechizo(hechizo, secuencia);
+        MostrarOverlay(true);
     }
 
     public void MostrarParaHechizo(Hechizo hechizo, IReadOnlyList<Tecla> secuencia)
@@ -100,6 +127,7 @@ public partial class CasteoUI : Control
         ContenedorTeclas.Visible = true;
         LabelConcentrando.Visible = false;
         LimpiarTeclas();
+        MostrarOverlay(false);
     }
 
     private void LimpiarTeclas()

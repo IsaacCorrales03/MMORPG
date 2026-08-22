@@ -40,7 +40,7 @@ namespace Server.Red
         {
             if (!TiposDePaquete.TryGetValue(tipo, out Type? clasePaquete))
             {
-                Console.WriteLine($"Tipo de paquete no registrado: {tipo}");
+                ServerLog.Log($"Tipo de paquete no registrado: {tipo}");
                 return;
             }
 
@@ -51,13 +51,13 @@ namespace Server.Red
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error deserializando paquete {tipo}: {ex.Message}");
+                ServerLog.Log($"Error deserializando paquete {tipo}: {ex.Message}");
                 return;
             }
 
             if (resultado is not IPaquete paquete)
             {
-                Console.WriteLine($"No existe un tipo registrado para {tipo}.");
+                ServerLog.Log($"No existe un tipo registrado para {tipo}.");
                 return;
             }
 
@@ -65,7 +65,7 @@ namespace Server.Red
             {
                 if (!_world.ManejaEvento(tipo))
                 {
-                    Console.WriteLine(
+                    ServerLog.Log(
                         $"No existe handler ni evento para {tipo}."
                     );
                     return;
@@ -77,7 +77,7 @@ namespace Server.Red
 
                 if (jugadorId is not int id)
                 {
-                    Console.WriteLine(
+                    ServerLog.Log(
                         $"No se pudo identificar al jugador para {tipo}."
                     );
                     return;
@@ -85,7 +85,7 @@ namespace Server.Red
 
                 if (!_world.players.ContainsKey(id))
                 {
-                    Console.WriteLine(
+                    ServerLog.Log(
                         $"El jugador {id} no existe en World."
                     );
                     return;

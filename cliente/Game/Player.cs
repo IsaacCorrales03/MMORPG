@@ -223,16 +223,21 @@ public partial class Player : CharacterBody2D
 			currentDirection == lastDirection;
 
 		if (direction != Vector2.Zero)
-			lastDirection = currentDirection;
+		{
+			lastDirection = ObtenerDireccionCardinal(currentDirection);
+		}
 
-		if (currentDirection == Vector2.Left)
-			sprite.Play("walk_left");
-		else if (currentDirection == Vector2.Right)
-			sprite.Play("walk_right");
-		else if (currentDirection == Vector2.Up)
-			sprite.Play("walk_up");
-		else if (currentDirection == Vector2.Down)
-			sprite.Play("walk_down");
+		if (direction != Vector2.Zero)
+		{
+			if (lastDirection == Vector2.Left)
+				sprite.Play("walk_left");
+			else if (lastDirection == Vector2.Right)
+				sprite.Play("walk_right");
+			else if (lastDirection == Vector2.Up)
+				sprite.Play("walk_up");
+			else
+				sprite.Play("walk_down");
+		}
 		else
 		{
 			if (lastDirection == Vector2.Left)
@@ -244,6 +249,14 @@ public partial class Player : CharacterBody2D
 			else
 				sprite.Play("idle_down");
 		}
+	}
+
+	private Vector2 ObtenerDireccionCardinal(Vector2 direccion)
+	{
+		if (Mathf.Abs(direccion.X) > Mathf.Abs(direccion.Y))
+			return direccion.X > 0 ? Vector2.Right : Vector2.Left;
+		else
+			return direccion.Y > 0 ? Vector2.Down : Vector2.Up;
 	}
 
 

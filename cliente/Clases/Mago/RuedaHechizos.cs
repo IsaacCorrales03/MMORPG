@@ -11,8 +11,7 @@ public partial class RuedaHechizos : Control
     [Export] public Label NombreHechizoLabel;
     [Export] public Label ManaHechizoLabel;
     [Export] public Label DescripcionHechizo;
-    [Export] public Label DuracionHechizoLabel; // agregar junto a los otros exports
-
+    [Export] public Label DuracionHechizoLabel;
 
     public event Action<Hechizo> HechizoSeleccionado;
 
@@ -23,6 +22,11 @@ public partial class RuedaHechizos : Control
     private const float RadioInterior = 200f;
     private const float RadioExterior = 430f;
     private const int SegmentosArco = 24;
+
+    // --- Animación ---
+    private const float DuracionAnim = 0.22f;
+    private Tween _tweenActivo;
+    private bool _cerrando = false;
 
     public void Abrir(Tomo tomo)
     {
@@ -49,12 +53,26 @@ public partial class RuedaHechizos : Control
             _slots.Add(slotInstance);
         }
 
+        _cerrando = false;
+
+        // Preparar estado inicial (invisible/chico) antes de mostrar
+        PivotOffset = Size / 2;
+        Scale = new Vector2(0.6f, 0.6f);
+        Modulate = new Color(1, 1, 1, 0f);
         Visible = true;
         QueueRedraw();
+
+        _tweenActivo?.Kill();
+        _tweenActivo = CreateTween();
+        _tweenActivo.SetEase(Tween.EaseType.Out);
+        _tweenActivo.SetTrans(Tween.TransitionType.Back);
+        _tweenActivo.TweenProperty(this, "scale", Vector2.One, DuracionAnim);
+        _tweenActivo.Parallel().TweenProperty(this, "modulate:a", 1f, DuracionAnim * 0.8f);
     }
+
     public override void _Process(double delta)
     {
-        if (!Visible || _slots.Count == 0) return;
+        if (!Visible || _cerrando || _slots.Count == 0) return;
 
         Vector2 centro = Size / 2;
         Vector2 mouseDir = GetLocalMousePosition() - centro;
@@ -78,7 +96,7 @@ public partial class RuedaHechizos : Control
         {
             _slotActivo = nuevoActivo;
             ActualizarCentro(_slotActivo?.Hechizo);
-            QueueRedraw(); // el gajo activo cambió, hay que redibujar
+            QueueRedraw();
         }
     }
 
@@ -140,6 +158,7 @@ public partial class RuedaHechizos : Control
         else
             DuracionHechizoLabel.Text = "";
     }
+
     public void LimpiarCentro()
     {
         NombreHechizoLabel.Text = "";
@@ -152,18 +171,36 @@ public partial class RuedaHechizos : Control
         foreach (var slot in _slots)
             slot.QueueFree();
         _slots.Clear();
-
     }
 
     public void Cerrar()
     {
+        if (_cerrando) return; // evitar doble-cierre mientras anima
+        _cerrando = true;
+
         if (_slotActivo != null)
             HechizoSeleccionado?.Invoke(_slotActivo.Hechizo);
 
+        PivotOffset = Size / 2;
+
+        _tweenActivo?.Kill();
+        _tweenActivo = CreateTween();
+        _tweenActivo.SetEase(Tween.EaseType.In);
+        _tweenActivo.SetTrans(Tween.TransitionType.Back);
+        _tweenActivo.TweenProperty(this, "scale", new Vector2(0.6f, 0.6f), DuracionAnim);
+        _tweenActivo.Parallel().TweenProperty(this, "modulate:a", 0f, DuracionAnim);
+        _tweenActivo.TweenCallback(Callable.From(FinalizarCierre));
+    }
+
+    private void FinalizarCierre()
+    {
         Visible = false;
         LimpiarSlots();
         _slotActivo = null;
         LimpiarCentro();
+        Scale = Vector2.One;
+        Modulate = new Color(1, 1, 1, 1);
+        _cerrando = false;
         QueueRedraw();
     }
 }

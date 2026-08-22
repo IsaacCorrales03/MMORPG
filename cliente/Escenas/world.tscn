@@ -546,3 +546,4 @@ _bundled = {
 [node name="Node2D" type="Node2D" unique_id=1201243137]
 script = ExtResource("1_r16dl")
 _jugadorEscena = SubResource("PackedScene_r8hkp")
+metadata/_edit_horizontal_guides_ = [-11484.0]

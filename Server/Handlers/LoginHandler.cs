@@ -29,7 +29,7 @@ namespace Server.Handlers
                 PacketSender.EnviarOrdenado(peer, respuesta);
                 return;
             }
-            Console.WriteLine($"Jugador DB ID: {jugador.Id}");
+            ServerLog.Log($"Jugador DB ID: {jugador.Id}");
 
             Sesion sesion = SesionManager.CrearSesion(
                 jugador.Id,
@@ -38,7 +38,7 @@ namespace Server.Handlers
                 peer
             );
 
-            Console.WriteLine($"Sesion PlayerID: {sesion.UsuarioId}");
+            ServerLog.Log($"Sesion PlayerID: {sesion.UsuarioId}");
 
 
             respuesta.Exitoso = true;
