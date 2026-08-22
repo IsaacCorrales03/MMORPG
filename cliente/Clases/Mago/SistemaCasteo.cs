@@ -30,9 +30,10 @@ public partial class SistemaCasteo : Node
 
 	public EstadoCasteo Estado { get; private set; } = EstadoCasteo.Inactivo;
 	public bool BloqueaOtrosInputs => Estado == EstadoCasteo.EnProgreso;
-
+	public Hechizo HechizoActual => _hechizo;
 	private float _tiempoAlEntrarEsperaMinima;
-
+	public IReadOnlyList<Tecla> Secuencia => _secuencia;
+	public int IndiceActual => _indiceActual;
 
 	public float ProgresoEsperaMinima()
 	{
@@ -146,6 +147,15 @@ public partial class SistemaCasteo : Node
 	public float ProgresoTiempo() =>
 		_hechizo == null ? 0f : Mathf.Clamp(_tiempoTranscurrido / _hechizo.TiempoMaximo, 0f, 1f);
 
-	public IReadOnlyList<Tecla> Secuencia => _secuencia;
-	public int IndiceActual => _indiceActual;
+
+
+	public void FinalizarUso()
+	{
+		// Llamar después de instanciar el AreaHechizo, para permitir castear de nuevo
+		Estado = EstadoCasteo.Inactivo;
+		_hechizo = null;
+		_secuencia = null;
+		_indiceActual = 0;
+		_tiempoTranscurrido = 0f;
+	}
 }

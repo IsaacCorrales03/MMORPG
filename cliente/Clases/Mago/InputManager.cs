@@ -17,6 +17,8 @@ public partial class InputManager : Node
         if (_sistemaCasteo != null && _sistemaCasteo.BloqueaOtrosInputs)
             return; // nada se procesa mientras castea: ni Q, ni click de rueda
 
+        if (_sistemaCasteo != null && EsperandoColocacion())
+            return; // hay un hechizo listo esperando click de colocación: no abrir la rueda
 
         if (@event is InputEventKey keyEvent &&
             keyEvent.Pressed &&
@@ -39,6 +41,11 @@ public partial class InputManager : Node
         }
     }
 
+    private bool EsperandoColocacion()
+    {
+        return _sistemaCasteo.Estado == EstadoCasteo.ListoParaUsar ||
+               _sistemaCasteo.Estado == EstadoCasteo.Completado;
+    }
 
     private void CambiarTomo()
     {

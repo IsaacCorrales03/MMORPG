@@ -1,7 +1,7 @@
 using Godot;
 public partial class Camera : Camera2D
 {
-    private const float MinZoom = 2f;
+    private const float MinZoom = 1.5f;
     private const float MaxZoom = 6.0f;
     private const float ZoomStep = 0.2f;
     private const float FollowSpeed = 10.0f;

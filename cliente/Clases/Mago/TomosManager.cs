@@ -39,10 +39,14 @@ public partial class TomosManager : Node
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		Tomo1.AsignarHechizo(CatalogoHechizos.Ignis); // lvl 1
-		Tomo1.AsignarHechizo(CatalogoHechizos.Umbara); // lvl 3
+		Tomo1.AsignarHechizo(CatalogoHechizos.Fulis); // lvl 1
+		Tomo1.AsignarHechizo(CatalogoHechizos.Terara); // lvl 3
 		Tomo1.AsignarHechizo(CatalogoHechizos.Aquaraion); //lvl 4
-		Tomo1.AsignarHechizo(CatalogoHechizos.Sanaeravon); //lvl 6
+		Tomo1.AsignarHechizo(CatalogoHechizos.Cryaeravon); //lvl 6
+		Tomo2.AsignarHechizo(CatalogoHechizos.Sanaeronis); // lvl 5
+		Tomo2.AsignarHechizo(CatalogoHechizos.Umbaeravon);
+		Tomo2.AsignarHechizo(CatalogoHechizos.Aeraraion);
+		Tomo2.AsignarHechizo(CatalogoHechizos.Ignaraion);
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.

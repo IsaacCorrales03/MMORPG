@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://r5qxkktm7rbs"]
+
+[ext_resource type="Script" uid="uid://b3j88ldaqa88i" path="res://Clases/Mago/AreaHechizo.cs" id="1_ah001"]
+
+[node name="AreaHechizo" type="Node2D" unique_id=119199807 node_paths=PackedStringArray("_sprite", "_timer")]
+script = ExtResource("1_ah001")
+_sprite = NodePath("Sprite2D")
+_timer = NodePath("Timer")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1725284246]
+
+[node name="Timer" type="Timer" parent="." unique_id=1789434384]
+wait_time = 3.0
+one_shot = true

@@ -7,12 +7,13 @@ namespace Shared.Magia
         public int CostoMana { get; protected set; }
         public string Descripcion { get; protected set; } = "";
         public List<Elemento> Elementos { get; protected set; }
-
+        public float Radio {get; protected set;}
         public RunaElemental Runa { get; protected set; }
         public CombinacionTeclas Combinacion { get; protected set; }
         public float TiempoMinimo { get; protected set; }
         public float TiempoMaximo { get; protected set; }
-        public Hechizo(string nombre, int nivel, int costoMana, string descripcion, List<Elemento> elementos, RunaElemental runa, CombinacionTeclas combinacion, float tiempoMinimo, float tiempoMaximo)
+        public string IconName {get; protected set; }
+        public Hechizo(string nombre, int nivel, int costoMana, string descripcion, List<Elemento> elementos, RunaElemental runa, CombinacionTeclas combinacion, float tiempoMinimo, float tiempoMaximo, float radio, string iconName = "fuego_1")
         {
             Nombre = nombre;
             Nivel = nivel;
@@ -23,6 +24,8 @@ namespace Shared.Magia
             Combinacion = combinacion;
             TiempoMinimo = tiempoMinimo;
             TiempoMaximo = tiempoMaximo;
+            Radio = radio;
+            IconName = iconName;
         }
 
         public List<Tecla> ObtenerCombinacion(int nivelUsuario)
